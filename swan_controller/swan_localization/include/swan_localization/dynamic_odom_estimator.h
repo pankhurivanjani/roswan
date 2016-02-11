@@ -46,13 +46,14 @@ protected:
 
     // current time
     int frequency;
-    double current_time, last_time;
+    double current_time, last_time, last_cmd_time;
 
     // frame ids
     std::string frame_id, child_frame_id;
 
     // ros param
     bool send_transform, sim_mode, holonomic;
+    double MAX_NO_CMD_TIME, STOP_CMD_DURATION;
 
     DynamicOdomParams dynamic_params;
 
@@ -74,6 +75,7 @@ public:
     const void update_position(DynamicOdomParams& _dynamic_params);
     const void pub_odom() const;
     const void pub_tf();
+    const bool failsafe_estimate();
 };
 
 }

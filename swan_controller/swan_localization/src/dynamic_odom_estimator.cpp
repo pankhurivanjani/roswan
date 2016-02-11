@@ -23,13 +23,15 @@ const void DynamicOdomEstimator::run(){
     setup();
     ros::Rate r(frequency);
     ros::Duration(0.5).sleep();
-    current_time = last_time = ros::Time::now().toSec();
+    current_time = last_time = last_cmd_time = ros::Time::now().toSec();
     try{
         while(n.ok()){
             ros::spinOnce();
             current_time = ros::Time::now().toSec();
-            loop();
+            if(failsafe_estimate())
+                loop();
             last_time = current_time;
+
             r.sleep();
         }
     }
@@ -45,6 +47,9 @@ const void DynamicOdomEstimator::setup(){
     nh.param("send_transform", send_transform, bool(false));
     nh.param("sim_mode", sim_mode, bool(true));
     nh.param("holonomic", holonomic, bool(false));
+    nh.param("max_no_cmd_time", MAX_NO_CMD_TIME, 0.5);
+    nh.param("stop_cmd_duration", STOP_CMD_DURATION, 0.2);
+
 
     odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
     cmd_sub = n.subscribe("cmd_vel", 1, &DynamicOdomEstimator::cmd_callback, this);
@@ -97,6 +102,7 @@ void DynamicOdomEstimator::cmd_callback(const geometry_msgs::Twist::ConstPtr& ms
     dynamic_params.vx = msg->linear.x;
     dynamic_params.vy = (holonomic) ? msg->linear.y : 0;
     dynamic_params.vth = msg->angular.z;
+    last_cmd_time = ros::Time::now().toSec();
 }
 
 void DynamicOdomEstimator::initialpose_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg){
@@ -147,5 +153,19 @@ const void DynamicOdomEstimator::pub_tf(){
     qt.setRPY(0,0, dynamic_params.th);
     tf2::convert(qt, odom_trans.transform.rotation);
     tf2_broadcaster.sendTransform(odom_trans);
-    
 }
+
+
+const bool DynamicOdomEstimator::failsafe_estimate(){
+    double no_cmd_time = current_time - last_cmd_time;
+    if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
+        dynamic_params.vx = 0;
+        dynamic_params.vy = 0;
+        dynamic_params.vth = 0;
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
