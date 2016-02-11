@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-    <!-- Map server -->
-    <arg name="map_file" default="$(find swan_navigation)/maps/geo_fence.yaml"/>
-    <node pkg="map_server" name="map_server"  type="map_server" args="$(arg map_file)" />
 
     <node pkg="tf" type="static_transform_publisher" name="fake_odom_tf_publisher" args="0 0 0 0 0 0 base_link base_footprint 100" />
 
