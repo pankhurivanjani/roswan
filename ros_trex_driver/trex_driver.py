@@ -91,13 +91,13 @@ class PoluluTrex:
 			self.have_loggederr = False
 			# Init
 			self.ser.write([0x80, self.device_id, 0x01]) # CMD: get signature
-			sig = self.ser.read(9)
-			if sig[0:6] != "TReXJr":
-				raise Exception("Incorrect signature (%s)" % (sig))
-			self.ser.write([0x80, self.device_id, 0x02]) # CMD: get mode
-			mode = self.ser.read(1)
-			if mode != 'a' and mode != 'r':
-				raise Exception("Incorrect mode (%c); change jumpers!" % (mode))
+			#sig = self.ser.read(9)
+			#if sig[0:6] != "TReXJr":
+				#raise Exception("Incorrect signature (%s)" % (sig))
+			#self.ser.write([0x80, self.device_id, 0x02]) # CMD: get mode
+			#mode = self.ser.read(1)
+			#if mode != 'a' and mode != 'r':
+				#raise Exception("Incorrect mode (%c); change jumpers!" % (mode))
 			self.dev_config()
 		except Exception as e:
 			if not self.have_loggederr:
@@ -119,9 +119,9 @@ class PoluluTrex:
 				val = int(rospy.get_param(pn)) & 0x7f
 				# Send to device
 				self.ser.write([0x80, self.device_id, 0x2F, param_id, val, 0x55, 0x2A]) # Cmd: Set parameter (0xAF)
-				data = self.ser.read(1)
-				ok = ord(data) == 0
-				rospy.loginfo("Device %d-%02x Parameter %s (0x%02x)=%d: %s" % (self.index, self.device_id, name, param_id, val, "OK" if ok else "FAIL"))
+				#data = self.ser.read(1)
+				#ok = ord(data) == 0
+				#rospy.loginfo("Device %d-%02x Parameter %s (0x%02x)=%d: %s" % (self.index, self.device_id, name, param_id, val, "OK" if ok else "FAIL"))
 
 
 	def cb_timer(self, event):
@@ -137,7 +137,7 @@ class PoluluTrex:
 	def cb_cmd(self, msg, index):
 		''' Callback for command message (PWM duty cycle) '''
 		pwm = int(round(msg.data * 0x7f))
-		if pwm < -0x7f: pwm = 0x7f
+		if pwm < -0x7f: pwm = -0x7f
 		if pwm >  0x7f: pwm = 0x7f
 		rospy.loginfo("Received command for %d-%d: %f->%d" % (self.index, index, msg.data, pwm))
 		# Build Command
