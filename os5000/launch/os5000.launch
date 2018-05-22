@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="port" default="/dev/ttyUSB0"/>
+    <arg name="port" default="/dev/compass"/>
     <arg name="baud" default="19200"/>
     <arg name="rate" default="40"/>
     
