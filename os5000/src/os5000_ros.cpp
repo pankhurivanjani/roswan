@@ -71,7 +71,7 @@ void OSCompass::publishImuData(ros::Publisher *pub_imu_data)
     double orientation_covariance = 1.;
     uint64_t time = 0;
 
-    imudata.orientation = tf::createQuaternionMsgFromRollPitchYaw(-roll * M_PI / 180., pitch * M_PI / 180., -yaw * M_PI / 180.);
+    imudata.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll * M_PI / 180., -pitch * M_PI / 180., -yaw * M_PI / 180.);
     
     imudata.orientation_covariance[0] = orientation_covariance;
     imudata.orientation_covariance[4] = orientation_covariance;
