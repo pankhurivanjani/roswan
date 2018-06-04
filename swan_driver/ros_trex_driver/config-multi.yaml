@@ -1,0 +1,7 @@
+baud: 115200
+ports: ["/dev/ttyUSB0", "/dev/ttyUSB1"]
+devices: [ 0x07, 0x07 ]
+rate: 50
+
+Motor1PWMPrescaler: 3
+Motor2PWMPrescaler: 3
