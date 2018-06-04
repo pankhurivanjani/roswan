@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="trex_driver" pkg="trex_driver" type="trex_driver.py" output="screen">
+<rosparam>
+baud: 19200
+ports: [ "/dev/ttyO1" ]
+devices: [ 0x07 ]
+rate: 30
+</rosparam>
+	</node>
+</launch>
