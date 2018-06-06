@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="swan_controller" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" output="screen">
+        <rosparam>
+            speed: 0.8
+            turn: 0.8
+        </rosparam>
+    </node>
+
+</launch>
+
