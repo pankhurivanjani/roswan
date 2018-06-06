@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<launch>
+    <!--node pkg="trex_driver" type="trex_driver.py" output="screen">
+        <rosparam>
+            baud: 19200
+            ports: ["/dev/thruster"]
+            devices: [0x07]
+            rate: 30
+        </rosparam>
+    </node-->
+
+
+    <node pkg="swan_controller" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard" output="screen">
+        <rosparam>
+            speed: 0.8
+            turn: 0.8
+        </rosparam>
+    </node>
+
+
+    <node pkg="swan_controller" type="swan_controller_node" name="swan_controller_node" output="screen">
+        <rosparam>
+            frequency: 20
+            mode: DEBUG
+            enable_joy: false
+            enable_key: true
+            enable_pid: false
+            max_no_cmd_time: 0.2
+            stop_cmd_duration: 0.2
+        </rosparam>
+    </node>
+
+</launch>
+

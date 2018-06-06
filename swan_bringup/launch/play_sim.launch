@@ -2,7 +2,7 @@
 <launch>
     <param name="use_sim_time" value="true" />
 
-    <node pkg="rosbag" type="play" name="gps_compass_player" output="screen" args="--clock --pause -r 1 -s 0 $(find swan_bringup)/../bag/_2018-06-01-12-35-34.bag" /><!-- -s 290 -r 1 $(find swan_bringup)/../bag/_2018-05-22-17-08-17_corrected.bag" /-->
+    <node pkg="rosbag" type="play" name="gps_compass_player" output="screen" args="--clock --pause -r 10 -s 0 $(find swan_bringup)/../bag/_2018-06-01-12-35-34.bag" /><!-- -s 290 -r 1 $(find swan_bringup)/../bag/_2018-05-22-17-08-17_corrected.bag" /-->
 
     <node pkg="swan_sim" type="constant_speed_sim" name="constant_speed_sim" output="screen" >
         <param name="forward_speed" value="0.5" />
@@ -13,7 +13,7 @@
     </node>
 
 
-    <node pkg="gps_common" type="utm_tf_node" name="fix_translator" output="screen">
+    <node pkg="gps_tools" type="utm_tf_node" name="fix_translator" output="screen">
         <remap from="odom" to="gps_odom" />
         <remap from="imu" to="os5000_data" />
         <rosparam>
@@ -26,7 +26,7 @@
         </rosparam>
     </node>
 
-    <node pkg="gps_common" type="static_utm_publisher" name="static_utm_publisher" output="screen">
+    <node pkg="gps_tools" type="static_utm_publisher" name="static_utm_publisher" output="screen">
         <remap from="odom" to="gps_odom" />
         <rosparam>
             frame_id: odom
