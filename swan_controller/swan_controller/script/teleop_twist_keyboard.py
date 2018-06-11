@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import roslib; roslib.load_manifest('teleop_twist_keyboard')
+import roslib#; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
 from geometry_msgs.msg import Twist
@@ -32,7 +32,7 @@ import sys, select, termios, tty
 
 # CTRL-C to quit
 # """
-
+status = 0;
 msg = """
 Reading from the keyboard and Publishing to Twist!
 
@@ -138,7 +138,7 @@ if __name__=="__main__":
             twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
             pub.publish(twist)
             rospy.Rate(20).sleep()
-    except:
+    except KeyboardInterrupt as e:
         print e
     finally:
         twist = Twist()

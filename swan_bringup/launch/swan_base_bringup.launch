@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="trex_driver" type="trex_driver.py" output="screen">
+    <!--node pkg="trex_driver" type="trex_driver.py" output="screen">
         <remap from="trex_driver/pwm00" to="l_motor">
         <remap from="trex_driver/pwm01" to="r_motor">
         <rosparam>
@@ -9,7 +9,7 @@
             devices: [0x07]
             rate: 30
         </rosparam>
-    </node>
+    </node-->
 
 
     <node pkg="swan_controller" type="swan_controller_node" name="swan_controller_node" output="screen">
@@ -18,7 +18,15 @@
             mode: DEBUG
             enable_joy: false
             enable_key: true
-            enable_pid: false
+            enable_pid: true
+            kp: 1
+            ki: 0
+            kd: 0
+            type: HEADING
+            pwr_min: 0.4
+            pwr_max: 0.9
+            speed_min: 0
+            speed_max: 2
             max_no_cmd_time: 0.2
             stop_cmd_duration: 0.2
         </rosparam>

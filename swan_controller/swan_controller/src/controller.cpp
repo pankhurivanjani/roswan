@@ -2,14 +2,20 @@
 #include <exception>
 
 Controller::Controller()
-    :r(0)
+    :r(20), heading(0.5)
 {
     ;
 }
 
 Controller::Controller(const int frequency)
-    :r(frequency), cmd_speed(0), cmd_turn(0)
+    :r(frequency), heading(M_PI * 3)
 {
+    run();
+}
+
+
+const void Controller::run(){
+    basic_setup();
     setup();
     ros::Duration(0.5).sleep();
     current_time = last_time = last_cmd_time = ros::Time::now().toSec();
@@ -18,6 +24,7 @@ Controller::Controller(const int frequency)
             ros::spinOnce();
             current_time = ros::Time::now().toSec();
             loop();
+            last_time = current_time;
             r.sleep();
         }
         stop();
@@ -30,7 +37,9 @@ Controller::Controller(const int frequency)
     }
 }
 
-void Controller::setup(){
+
+
+const void Controller::basic_setup(){
 
     /*  Configure Parameters  */
     ros::param::param<std::string>("~mode", mode, "STANDARD");
@@ -44,15 +53,10 @@ void Controller::setup(){
         if(enable_key){
             key_sub = n.subscribe("cmd_vel", 1, &Controller::key_callback, this);
         }
-        ros::param::param<bool>("~enable_pid", enable_key, true);
-        if(enable_pid){
-            //Dynamic reconfiguration enable pid;
-        }
+        ros::param::param<bool>("~enable_pid", enable_pid, true);
     }
     else if(mode == "STANDARD"){
-        ros::param::param<double>("~kp", kp, 1);
-        ros::param::param<double>("~ki", ki, 0);
-        ros::param::param<double>("~kd", kd, 0);
+        ;
     }
     else{
         ROS_WARN("Wrong mode type. using STANDARD as default");
@@ -60,28 +64,57 @@ void Controller::setup(){
     }
     ros::param::param<double>("~max_no_cmd_time", MAX_NO_CMD_TIME, 0.2);
     ros::param::param<double>("~stop_cmd_duration", STOP_CMD_DURATION, 0.2);
-    
-    l_pub = n.advertise<std_msgs::Float64>("l_motor", 1);
-    r_pub = n.advertise<std_msgs::Float64>("r_motor", 1);
 }
 
 
-void Controller::loop(){
-    if(!failsafe())
-        diff_drive();
-}
 
-void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
-    cmd_speed = msg->linear.x;
-    cmd_turn = msg->angular.z;
+void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
+    joy_cmd = *joy;
     last_cmd_time = ros::Time::now().toSec();
 }
 
 
-void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
-    ;
+
+void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
+    key_speed = msg->linear.x;
+    key_turn = msg->angular.z;
+    last_cmd_time = ros::Time::now().toSec();
 }
 
+
+
+void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
+    heading = tf::getYaw(imu->orientation);
+}
+
+
+
+const bool Controller::failsafe(){
+    double no_cmd_time = current_time - last_cmd_time;
+    if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
+        stop();
+        return true;
+    }
+    else if(no_cmd_time >= (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
+        return true;
+    else
+        return false;
+}
+
+
+
+void Controller::loop(){
+    ;    
+//    if(!failsafe())
+//        diff_drive();
+}
+
+
+
+void Controller::setup(){
+    basic_setup();
+}
+/*
 void Controller::diff_drive(){
     std_msgs::Float64 l_msg, r_msg;
     double raw_l_pwr, raw_r_pwr, l_pwr, r_pwr;
@@ -94,21 +127,11 @@ void Controller::diff_drive(){
     l_pub.publish(l_msg);
     r_pub.publish(r_msg);
 }
+*/
 
-const void Controller::stop(){
-    cmd_speed = 0;
-    cmd_turn = 0;
-    diff_drive();
+
+
+void Controller::stop(){
+    ;
 }
 
-bool Controller::failsafe(){
-    double no_cmd_time = current_time - last_cmd_time;
-    if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
-        stop();
-        return true;
-    }
-    else if(no_cmd_time >= (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
-        return true;
-    else
-        return false;
-}

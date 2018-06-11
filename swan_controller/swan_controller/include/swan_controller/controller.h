@@ -6,17 +6,12 @@
  */
 
 #include <ros/ros.h>
-#include <std_msgs/Float64.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Joy.h>
 #include <sensor_msgs/NavSatFix.h>
-#include <nav_msgs/Odometry.h>
-#include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
 #include <string>
-
-#include <gps_common/conversions.h>
 
 
 class Controller{
@@ -30,20 +25,8 @@ protected:
     // Subscriber for joy and keyboard testing
     ros::Subscriber joy_sub, key_sub;
 
-    // Subscriber for autonomous cmd;
-    ros::Subscriber auto_sub;
-
-    // Publisher to the motor driver;
-    ros::Publisher l_pub, r_pub;
-    
-    // Subscriber for feedback from IMU and GPS
-    ros::Subscriber imu_sub, fix_sub;
-
-    // Odom and TF publisher
-    ros::Publisher odom_pub;
-    tf::TransformBroadcaster tf_broadcaster;
-
-
+    // Subscriber for feedback from IMU
+    ros::Subscriber imu_sub;
 
 
     /*  Command and Configuration */
@@ -51,50 +34,60 @@ protected:
     std::string mode;
     bool enable_joy, enable_key, enable_pid;
     // linear and angular speed to motor driver
-    double cmd_speed, cmd_turn;
+    double key_speed, key_turn;
+    sensor_msgs::Joy joy_cmd;
+    double auto_speed, auto_turn;
 
-    // desired and feedback displacement and yaw;
-    double desired_displacement, desired_yaw;
-    double fb_displacement, fb_yaw;
-
-    // PID parameters
-    double kp, ki, kd;
-
-    // TF and odom config
-    bool publish_transform, publish_odom;
-    std::string frame_id, child_frame_id;
-
+    // displacement and yaw;
+    double position, heading;
 
     
     // Failsafe parameters
     double MAX_NO_CMD_TIME, STOP_CMD_DURATION;
     double current_time, last_time, last_cmd_time;
 
-    const inline double constrain(double a, double min, double max){
-        if(a > max)
-            return max;
-        else if(a < - max)
-            return -max;
-        else if(a < min && a > - min)
+    const inline double remap_constrain(double a, double min, double max, double map_min, double map_max){
+        min = std::abs(min);
+        max = std::abs(max);
+        map_min = std::abs(map_min);
+        map_max = std::abs(map_max);
+
+        if(min > max)
+            std::swap(min, max);
+        if(map_min > map_max)
+            std::swap(map_min, map_max);
+
+        if(a > max){
+            ROS_WARN("Max speed is reached");
+            return map_max;
+        }else if(a < - max){
+            ROS_WARN("Max speed is reached");
+            return -map_max;
+        }else if(a <= min && a >= - min)
             return 0;
-        else
-            return a;
+        else if(a > min && a <= max)
+            return map_min + a * (map_max - map_min) / (max - min);
+        else if(a < - min && a >= - max)
+            return - map_min + a * (map_max - map_min) / (max - min);
+        else 
+            return 0;
     }
+    
 
 public:
     Controller();
 
     // Main Constructor
     explicit Controller(const int frequency);
-    virtual void setup();
-    virtual void loop();
+    const void run();
+    const void basic_setup();
     void joy_callback(const sensor_msgs::Joy::ConstPtr& joy);
     void key_callback(const geometry_msgs::Twist::ConstPtr& msg);
-    void gps_callback(const sensor_msgs::NavSatFix::ConstPtr& fix);
     void imu_callback(const sensor_msgs::Imu::ConstPtr& imu);
-    bool failsafe();
-    const void stop();
-    virtual void diff_drive();
+    const bool failsafe();
+    virtual void setup();
+    virtual void loop();
+    virtual void stop();
 
 
 };
