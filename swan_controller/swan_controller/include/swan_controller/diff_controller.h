@@ -22,8 +22,7 @@ protected:
 
 public:
     Diff_Controller();
-    // Main Constructor
-    explicit Diff_Controller(const int frequency);
+    ~Diff_Controller();
 
     void setup();
     void desired_heading_estimator();

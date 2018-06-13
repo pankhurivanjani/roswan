@@ -2,21 +2,21 @@
 #include <exception>
 
 Controller::Controller()
-    :r(20), heading(0.5)
+    :heading(0.5)
 {
     ;
 }
-
-Controller::Controller(const int frequency)
-    :r(frequency), heading(M_PI * 3)
-{
-    run();
+Controller::~Controller(){
+    ;
 }
 
 
 const void Controller::run(){
     basic_setup();
     setup();
+    if(n.ok())
+        stop();
+    ros::Rate r(frequency);
     ros::Duration(0.5).sleep();
     current_time = last_time = last_cmd_time = ros::Time::now().toSec();
     try{
@@ -42,6 +42,7 @@ const void Controller::run(){
 const void Controller::basic_setup(){
 
     /*  Configure Parameters  */
+    ros::param::param<int>("~frequency", frequency, 20);
     ros::param::param<std::string>("~mode", mode, "STANDARD");
 
     if(mode == "DEBUG"){
@@ -69,7 +70,7 @@ const void Controller::basic_setup(){
 
 
 void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
-    joy_cmd = *joy;
+    ;
     last_cmd_time = ros::Time::now().toSec();
 }
 
@@ -105,8 +106,6 @@ const bool Controller::failsafe(){
 
 void Controller::loop(){
     ;    
-//    if(!failsafe())
-//        diff_drive();
 }
 
 
@@ -114,20 +113,6 @@ void Controller::loop(){
 void Controller::setup(){
     basic_setup();
 }
-/*
-void Controller::diff_drive(){
-    std_msgs::Float64 l_msg, r_msg;
-    double raw_l_pwr, raw_r_pwr, l_pwr, r_pwr;
-    raw_l_pwr = cmd_speed - cmd_turn;
-    raw_r_pwr = cmd_speed + cmd_turn;
-    l_pwr = constrain(raw_l_pwr, 0.4, 0.9);
-    r_pwr = constrain(raw_r_pwr, 0.4, 0.9);
-    l_msg.data = l_pwr;
-    r_msg.data = r_pwr;
-    l_pub.publish(l_msg);
-    r_pub.publish(r_msg);
-}
-*/
 
 
 

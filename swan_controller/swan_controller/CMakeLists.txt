@@ -10,12 +10,13 @@ project(swan_controller)
 find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   geometry_msgs
+  gps_common
   nav_msgs
-  std_msgs
   roscpp
   rospy
   sensor_msgs
-  gps_common
+  std_msgs
+  swan_msgs
   tf
 )
 
@@ -94,10 +95,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+    cfg/swanPID.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -148,7 +148,7 @@ add_executable(${PROJECT_NAME}_node src/swan_controller_node.cpp src/diff_contro
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_node ${PROJECT_NAME}_gencfg ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}_node

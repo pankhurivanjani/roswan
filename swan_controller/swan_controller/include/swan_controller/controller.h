@@ -17,9 +17,6 @@
 class Controller{
 protected:
     ros::NodeHandle n;
-    ros::Rate r;
-
-
 
     /*  Publisher and Subscriber  */
     // Subscriber for joy and keyboard testing
@@ -30,12 +27,15 @@ protected:
 
 
     /*  Command and Configuration */
+    // frequency
+    int frequency;
+
     // running mode
     std::string mode;
     bool enable_joy, enable_key, enable_pid;
     // linear and angular speed to motor driver
     double key_speed, key_turn;
-    sensor_msgs::Joy joy_cmd;
+    double joy_speed, joy_turn;
     double auto_speed, auto_turn;
 
     // displacement and yaw;
@@ -76,12 +76,11 @@ protected:
 
 public:
     Controller();
+    ~Controller();
 
-    // Main Constructor
-    explicit Controller(const int frequency);
     const void run();
     const void basic_setup();
-    void joy_callback(const sensor_msgs::Joy::ConstPtr& joy);
+    virtual void joy_callback(const sensor_msgs::Joy::ConstPtr& joy);
     void key_callback(const geometry_msgs::Twist::ConstPtr& msg);
     void imu_callback(const sensor_msgs::Imu::ConstPtr& imu);
     const bool failsafe();

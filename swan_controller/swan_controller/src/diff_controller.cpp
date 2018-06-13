@@ -4,8 +4,7 @@ Diff_Controller::Diff_Controller(){
     ;
 }
 
-Diff_Controller::Diff_Controller(const int frequency){
-    run();
+Diff_Controller::~Diff_Controller(){
 }
 
 void Diff_Controller::setup(){
@@ -13,7 +12,6 @@ void Diff_Controller::setup(){
         pid_setup();
     last_turn = 0;
     desired_speed = desired_turn = desired_heading = last_heading = 0;
-    input = output = 0;
     ros::param::param<std::string>("~type", type, "TURN" );
     ros::param::param<double>("~pwr_min", pwr_min, 0.4);
     ros::param::param<double>("~pwr_max", pwr_max, 0.9);
@@ -29,7 +27,7 @@ void Diff_Controller::setup(){
             break;
         }
         ROS_WARN("Heading out of range, heading: %f", heading);
-        r.sleep();
+        ros::Rate(frequency).sleep();
     }
     desired_heading = last_heading = heading;
 }
@@ -74,16 +72,16 @@ void Diff_Controller::loop(){
         if(type == "TURN"){
             last_turn_estimator();
             input = desired_turn;
-            output = last_turn;
+            feedback = last_turn;
         }
         else if(type == "HEADING"){
             desired_heading_estimator();
             input = desired_heading;
-            output = heading;
+            feedback = heading;
         }
         cmd_speed = desired_speed;
         cmd_turn = pid();
-        ROS_INFO("desired_heading = %.5f", desired_heading);
+        //ROS_INFO("desired_heading = %.5f", desired_heading);
         diff_drive(cmd_speed, cmd_turn);
     }
 }
@@ -104,4 +102,5 @@ void Diff_Controller::diff_drive(const double _speed, const double _turn){
 
 void Diff_Controller::stop(){
     diff_drive(0, 0);
+    key_speed = key_turn = joy_speed = joy_turn = auto_speed = auto_turn = 0;
 }
