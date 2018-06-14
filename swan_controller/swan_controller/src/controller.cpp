@@ -44,6 +44,7 @@ const void Controller::basic_setup(){
     /*  Configure Parameters  */
     ros::param::param<int>("~frequency", frequency, 20);
     ros::param::param<std::string>("~mode", mode, "STANDARD");
+    imu_sub = n.subscribe("imu", 1, &Controller::imu_callback, this);
 
     if(mode == "DEBUG"){
         ros::param::param<bool>("~enable_joy", enable_joy, false);
