@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-    <!--<node pkg="trex_driver" type="trex_driver.py" name="trex_driver" output="screen">
+    <!-- Pololu Motor Driver -->
+    <node pkg="trex_driver" type="trex_driver.py" name="trex_driver" output="screen">
         <remap from="trex_driver/pwm00" to="l_motor"/>
         <remap from="trex_driver/pwm01" to="r_motor"/>
         <rosparam>
@@ -9,9 +10,23 @@
             devices: [0x07]
             rate: 30
         </rosparam>
-    </node-->
+    </node>
 
+    <!-- GPS -->
+    <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="gps_driver">
+        <param name="port" value="/dev/gps" />
+        <param name="baud" value="4800" />
+        <param name="frame_id" value="gps" />
+    </node>
 
+    <!-- Imu or compass -->
+    <include file="$(find os5000)/launch/os5000.launch">
+        <arg name="port" value="/dev/compass" />
+        <arg name="rate" value="40" />
+        <arg name="os5000_topic" value="imu" />
+    </include>
+
+    <!-- ROSwan controller -->
     <node pkg="swan_controller" type="swan_controller_node" name="swan_controller_node" output="screen">
         <rosparam>
             frequency: 20
@@ -31,6 +46,9 @@
             stop_cmd_duration: 0.2
         </rosparam>
     </node>
+
+    <!-- rosbag recorder -->
+    <!--node pkg="rosbag" type="record" name="gps_compass_recorder" output="screen" args="record -o /home/ubuntu/bag/ /fix /vel /os5000_data" /-->
 
 </launch>
 
