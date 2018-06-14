@@ -2,8 +2,8 @@
 <launch>
     <arg name="port" default="/dev/compass"/>
     <arg name="baud" default="19200"/>
-    <arg name="rate" default="40"/>
-    <arg name="os5000_topic" default="os5000_data"/>
+    <arg name="rate" default="20"/>
+    <arg name="os5000_topic" default="imu"/>
     
     <node pkg="os5000" type="os5000" name="os5000" output="screen">
         <remap from="os5000_data" to="$(arg os5000_topic)"/>

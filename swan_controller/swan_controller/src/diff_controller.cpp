@@ -18,15 +18,20 @@ void Diff_Controller::setup(){
     ros::param::param<double>("~speed_min", speed_min, 0);
     ros::param::param<double>("~speed_max", speed_max, 2);
 
-    l_pub = n.advertise<std_msgs::Float64>("l_motor", 10);
-    r_pub = n.advertise<std_msgs::Float64>("r_motor", 10);
+    l_pub = n.advertise<std_msgs::Float64>("l_motor", 1);
+    r_pub = n.advertise<std_msgs::Float64>("r_motor", 1);
 
     while(n.ok()){
         ros::spinOnce();
-        if(heading >= 0 && heading <= 2 * M_PI){
+        if(heading >= -M_PI && heading <= M_PI){
             break;
         }
-        ROS_WARN("Heading out of range, heading: %f", heading);
+        if(heading == 3 * M_PI){
+            ROS_WARN("Compass values not available");
+        }
+        else{
+            ROS_WARN("Heading out of range, heading: %f", heading);
+        }
         ros::Rate(frequency).sleep();
     }
     desired_heading = last_heading = heading;
@@ -84,6 +89,7 @@ void Diff_Controller::loop(){
         //ROS_INFO("desired_heading = %.5f", desired_heading);
         diff_drive(cmd_speed, cmd_turn);
     }
+    diagnostic_pub();
 }
 
 void Diff_Controller::diff_drive(const double _speed, const double _turn){
@@ -102,5 +108,5 @@ void Diff_Controller::diff_drive(const double _speed, const double _turn){
 
 void Diff_Controller::stop(){
     diff_drive(0, 0);
-    key_speed = key_turn = joy_speed = joy_turn = auto_speed = auto_turn = 0;
+    key_speed = key_turn = joy_speed = joy_turn = auto_speed = auto_turn = desired_speed = desired_turn = 0;
 }

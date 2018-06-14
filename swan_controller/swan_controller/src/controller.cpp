@@ -2,7 +2,7 @@
 #include <exception>
 
 Controller::Controller()
-    :heading(0.5)
+    :heading(3 * M_PI)
 {
     ;
 }
