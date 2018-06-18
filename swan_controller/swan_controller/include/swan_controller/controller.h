@@ -39,7 +39,8 @@ protected:
     double auto_speed, auto_turn;
 
     // displacement and yaw;
-    double position, heading;
+    double position, heading, last_heading, turn;
+    
 
     
     // Failsafe parameters

@@ -13,7 +13,7 @@
 class Diff_Controller : public PID_Controller{
 protected:
     double desired_speed, desired_turn, desired_heading;
-    double last_heading, last_turn;
+    double last_turn;
     double cmd_speed, cmd_turn;
     double pwr_min, pwr_max, speed_min, speed_max;
     std::string type;

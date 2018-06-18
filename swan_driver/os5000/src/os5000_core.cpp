@@ -59,7 +59,7 @@ Compass::Compass(string _portname, int _baud, int _rate, int _init_time) : Seria
     timer = new Timing(init_time);
 
     // Set up the compass.
-    setup();
+    //setup();
 } // end Compass()
 
 

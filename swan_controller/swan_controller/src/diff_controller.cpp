@@ -11,7 +11,7 @@ void Diff_Controller::setup(){
     if(enable_pid)
         pid_setup();
     last_turn = 0;
-    desired_speed = desired_turn = desired_heading = last_heading = 0;
+    desired_speed = desired_turn = desired_heading = 0;
     ros::param::param<std::string>("~type", type, "TURN" );
     ros::param::param<double>("~pwr_min", pwr_min, 0.4);
     ros::param::param<double>("~pwr_max", pwr_max, 0.9);
@@ -28,13 +28,14 @@ void Diff_Controller::setup(){
         }
         if(heading == 3 * M_PI){
             ROS_WARN("Compass values not available");
+            break;
         }
         else{
             ROS_WARN("Heading out of range, heading: %f", heading);
         }
         ros::Rate(frequency).sleep();
     }
-    desired_heading = last_heading = heading;
+    desired_heading = heading;
 }
 
 void Diff_Controller::desired_heading_estimator(){
@@ -51,9 +52,7 @@ void Diff_Controller::desired_heading_estimator(){
 }
 
 void Diff_Controller::last_turn_estimator(){
-    double dt = current_time - last_time;
-    last_turn = (heading - last_heading) / dt;
-    last_heading = heading;
+    last_turn = turn;
 }
 
 void Diff_Controller::loop(){

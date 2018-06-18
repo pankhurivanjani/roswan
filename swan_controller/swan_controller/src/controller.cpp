@@ -2,7 +2,7 @@
 #include <exception>
 
 Controller::Controller()
-    :heading(3 * M_PI)
+    :heading(3 * M_PI), turn(0)
 {
     ;
 }
@@ -86,7 +86,10 @@ void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
 
 
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
+    last_heading = heading;
     heading = tf::getYaw(imu->orientation);
+    double dt = current_time - last_time;
+    turn = (heading - last_heading) / dt;
 }
 
 

@@ -100,7 +100,7 @@ def vels(speed,turn):
 
 if __name__=="__main__":
     settings = termios.tcgetattr(sys.stdin)
-    pub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
+    pub = rospy.Publisher('/cmd_vel', Twist, queue_size = 10)
     rospy.init_node('teleop_twist_keyboard')
     speed = rospy.get_param("~speed", 1.0)
     turn = rospy.get_param("~turn", 1.0)
@@ -137,7 +137,7 @@ if __name__=="__main__":
             twist.linear.x = x*speed; twist.linear.y = y*speed; twist.linear.z = z*speed;
             twist.angular.x = 0; twist.angular.y = 0; twist.angular.z = th*turn
             pub.publish(twist)
-            rospy.Rate(20).sleep()
+            rospy.Rate(10).sleep()
     except KeyboardInterrupt as e:
         print e
     finally:

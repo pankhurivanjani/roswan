@@ -11,6 +11,7 @@ float64 loop_error
 float64 gain
 float64 position
 float64 heading
+float64 turn
 
 ## Advance
 float64 p_gain

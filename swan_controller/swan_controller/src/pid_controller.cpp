@@ -31,9 +31,9 @@ const void PID_Controller::pid_setup(){
 }
 
 void PID_Controller::pid_reconfigure_callback(swan_controller::swanPIDConfig &config, uint32_t level){
-    kp = config.p;
-    ki = config.i;
-    kd = config.d;
+    kp = config.p * pow(10, config.p_scale - 2);
+    ki = config.i * pow(10, config.i_scale - 2);
+    kd = config.d * pow(10, config.d_scale - 2);
     ROS_INFO("Reconfigure PID Constant: kp=%.2f,\tki=%.2f,\tkd=%.2f.", kp, ki, kd);
 }
 
@@ -52,5 +52,6 @@ const void PID_Controller::diagnostic_pub(){
     diagnostic_msg.gain = p_gain + i_gain + d_gain;
     diagnostic_msg.position = position;
     diagnostic_msg.heading = heading;
+    diagnostic_msg.turn = turn;
     diag_pub.publish(diagnostic_msg);
 }
