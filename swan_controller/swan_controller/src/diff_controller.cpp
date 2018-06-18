@@ -17,10 +17,7 @@ void Diff_Controller::setup(){
     ros::param::param<double>("~pwr_max", pwr_max, 0.9);
     ros::param::param<double>("~speed_min", speed_min, 0);
     ros::param::param<double>("~speed_max", speed_max, 2);
-
-    l_pub = n.advertise<std_msgs::Float64>("l_motor", 1);
-    r_pub = n.advertise<std_msgs::Float64>("r_motor", 1);
-
+    ros::param::param<double>("~gain_min", min_gain, 0.05);
     while(n.ok()){
         ros::spinOnce();
         if(heading >= -M_PI && heading <= M_PI){
@@ -28,7 +25,6 @@ void Diff_Controller::setup(){
         }
         if(heading == 3 * M_PI){
             ROS_WARN("Compass values not available");
-            break;
         }
         else{
             ROS_WARN("Heading out of range, heading: %f", heading);
@@ -41,11 +37,11 @@ void Diff_Controller::setup(){
 void Diff_Controller::desired_heading_estimator(){
     double dt = current_time - last_time;
     desired_heading += desired_turn * dt;
-    while(std::abs(desired_heading - heading) >= 2 * M_PI){
-        if((desired_heading - heading) >= 2 * M_PI){
+    while(std::abs(desired_heading - heading) >= M_PI){
+        if((desired_heading - heading) >= M_PI){
             desired_heading -= 2 * M_PI;
         }
-        else if((desired_heading - heading) <= - 2 * M_PI){
+        else if((desired_heading - heading) <= - M_PI){
             desired_heading += 2 * M_PI;
         }
     } 
@@ -57,20 +53,12 @@ void Diff_Controller::last_turn_estimator(){
 
 void Diff_Controller::loop(){
     if(!failsafe()){
-        if(enable_key){
-            if(key_speed != 0 || key_turn != 0){
+        if(enable_joy){
+            ;
+        }
+        else if(enable_key){
                 desired_speed = key_speed;
                 desired_turn = key_turn;
-            }
-            else if(enable_joy){
-                if(false){
-                    ;
-                }
-                else{
-                    desired_speed = auto_speed;
-                    desired_turn = auto_turn;
-                }
-            }
         }
 
         if(type == "TURN"){
@@ -84,7 +72,8 @@ void Diff_Controller::loop(){
             feedback = heading;
         }
         cmd_speed = desired_speed;
-        cmd_turn = pid();
+        cmd_turn =  pid();
+        cmd_turn = (cmd_turn > min_gain) ? cmd_turn : 0;
         //ROS_INFO("desired_heading = %.5f", desired_heading);
         diff_drive(cmd_speed, cmd_turn);
     }

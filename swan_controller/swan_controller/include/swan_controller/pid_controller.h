@@ -27,7 +27,8 @@ protected:
         i_gain += ki * new_err;
         d_gain = kd * (new_err - err);
         err = new_err;
-        return p_gain + i_gain + d_gain;
+        double total_gain = p_gain + i_gain + d_gain;
+        return total_gain;
     }
 
 public:

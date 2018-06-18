@@ -16,6 +16,7 @@ protected:
     double last_turn;
     double cmd_speed, cmd_turn;
     double pwr_min, pwr_max, speed_min, speed_max;
+    double min_gain;
     std::string type;
 
     ros::Publisher l_pub, r_pub;

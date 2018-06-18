@@ -88,7 +88,7 @@ void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
     last_heading = heading;
     heading = tf::getYaw(imu->orientation);
-    double dt = current_time - last_time;
+    double dt = ros::Time::now().toSec() - last_time;
     turn = (heading - last_heading) / dt;
 }
 
