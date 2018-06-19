@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>swan_controller</name>
+  <version>0.0.0</version>
+  <description>The swan_controller package</description>
+
+  <maintainer email="brian97cbn@gmail.com">Chen Bainian</maintainer>
+
+
+  <license>BSD</license>
+
+  <author email="brian97cbn@gmail.com">Chen Bainian</author>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>geometry_msgs</depend>
+  <depend>gps_common</depend>
+  <depend>nav_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>swan_msgs</depend>
+  <depend>tf</depend>
+
+
+  <export>
+  </export>
+</package>

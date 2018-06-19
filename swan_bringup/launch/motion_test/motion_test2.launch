@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- GPS -->
+    <node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="gps_driver">
+        <param name="port" value="/dev/gps" />
+        <param name="baud" value="4800" />
+        <param name="frame_id" value="gps" />
+    </node>
+    <!-- test 1 simulator -->
+    <!--node pkg="swan_sim" type="auto_sim" name="test_1_sim">
+        <param name="rate" value="10" />
+    </node-->
+    <!-- rosbag recorder -->
+    <node pkg="rosbag" type="record" name="gps_compass_recorder" output="screen" args="record -o /home/ubuntu/bag/motion_test3.bag /fix /vel /imu /pid_diagnostic" />
+
+</launch>

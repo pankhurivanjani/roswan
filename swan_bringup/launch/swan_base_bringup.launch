@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Pololu Motor Driver -->
+    <node pkg="trex_driver" type="trex_driver.py" name="trex_driver" output="screen">
+        <remap from="trex_driver/pwm00" to="l_motor"/>
+        <remap from="trex_driver/pwm01" to="r_motor"/>
+        <rosparam>
+            baud: 19200
+            ports: ["/dev/thruster"]
+            devices: [0x07]
+            rate: 30
+        </rosparam>
+    </node>
+
+    <!-- GPS -->
+    <!--node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="gps_driver" output="screen">
+        <param name="port" value="/dev/gps" />
+        <param name="baud" value="4800" />
+        <param name="frame_id" value="gps" />
+    </node-->
+
+    <!-- Imu or compass -->
+    <include file="$(find os5000)/launch/os5000.launch">
+        <arg name="port" value="/dev/compass" />
+        <arg name="os5000_topic" value="imu" />
+    </include>
+
+    <!-- ROSwan controller -->
+    <node pkg="swan_controller" type="swan_controller_node" name="swan_controller_node" output="screen">
+        <remap from="swan_controller_node/cmd_vel" to="cmd_vel" />
+        <remap from="swan_controller_node/imu" to="imu" />
+        <rosparam>
+            frequency: 20
+            mode: DEBUG
+            enable_joy: false
+            enable_key: true
+            enable_pid: true
+            kp: 0.5
+            ki: 0
+            kd: 0
+            type: HEADING
+            pwr_min: 0.4
+            pwr_max: 0.9
+            speed_min: 0
+            speed_max: 2
+            min_gain: 0.05
+            max_no_cmd_time: 0.5
+            stop_cmd_duration: 0.2
+        </rosparam>
+    </node>
+
+    <!-- test 1 simulator >
+    <node pkg="swan_sim" type="auto_sim" name="test_1_sim">
+        <param name="rate" value="10" />
+    </node-->
+
+
+    <!-- rosbag recorder -->
+    <!--node pkg="rosbag" type="record" name="gps_compass_recorder" output="screen" args="record -o /home/ubuntu/bag/ /fix /vel /os5000_data" /-->
+
+</launch>
+
