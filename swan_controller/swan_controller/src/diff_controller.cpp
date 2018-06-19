@@ -76,7 +76,7 @@ void Diff_Controller::loop(){
         }
         cmd_speed = desired_speed;
         cmd_turn =  pid();
-        cmd_turn = (cmd_turn > min_gain) ? cmd_turn : 0;
+        cmd_turn = (std::abs(cmd_turn) > min_gain) ? cmd_turn : 0;
         //ROS_INFO("desired_heading = %.5f", desired_heading);
         diff_drive(cmd_speed, cmd_turn);
     }
