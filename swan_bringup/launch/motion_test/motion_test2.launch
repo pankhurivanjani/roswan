@@ -7,10 +7,10 @@
         <param name="frame_id" value="gps" />
     </node>
     <!-- test 1 simulator -->
-    <node pkg="swan_sim" type="auto_sim" name="test_1_sim">
+    <!--node pkg="swan_sim" type="auto_sim" name="test_1_sim">
         <param name="rate" value="10" />
-    </node>
+    </node-->
     <!-- rosbag recorder -->
-    <node pkg="rosbag" type="record" name="gps_compass_recorder" output="screen" args="record -o /home/ubuntu/bag/motion_test2.bag /fix /vel /imu /pid_diagnostic" />
+    <node pkg="rosbag" type="record" name="gps_compass_recorder" output="screen" args="record -o /home/ubuntu/bag/motion_test3.bag /fix /vel /imu /pid_diagnostic" />
 
 </launch>

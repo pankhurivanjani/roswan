@@ -32,6 +32,9 @@ void Diff_Controller::setup(){
         ros::Rate(frequency).sleep();
     }
     desired_heading = heading;
+    r_pub = n.advertise<std_msgs::Float64>("/r_motor", 1);
+    l_pub = n.advertise<std_msgs::Float64>("/l_motor", 1);
+
 }
 
 void Diff_Controller::desired_heading_estimator(){

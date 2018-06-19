@@ -27,6 +27,8 @@
 
     <!-- ROSwan controller -->
     <node pkg="swan_controller" type="swan_controller_node" name="swan_controller_node" output="screen">
+        <remap from="swan_controller_node/cmd_vel" to="cmd_vel" />
+        <remap from="swan_controller_node/imu" to="imu" />
         <rosparam>
             frequency: 20
             mode: DEBUG
