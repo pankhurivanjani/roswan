@@ -2,19 +2,20 @@
 <launch>
     <param name="use_sim_time" value="true" />
 
-    <node pkg="rosbag" type="play" name="gps_compass_player" output="screen" args="--clock --pause -r 5 -s 620 -u 76 $(find swan_bringup)/../bag/motion_test3_2018-06-19-12-02-19.bag" /><!-- -s 290 -r 1 $(find swan_bringup)/../bag/_2018-05-22-17-08-17_corrected.bag" /-->
+    <node pkg="rosbag" type="play" name="gps_compass_player" output="screen" args="--clock --pause -r 10 -s 0 $(find swan_bringup)/../bag/_2018-06-01-12-35-34.bag" /><!-- -s 290 -r 1 $(find swan_bringup)/../bag/_2018-05-22-17-08-17_corrected.bag" /-->
 
-    <!--node pkg="swan_sim" type="constant_speed_sim" name="constant_speed_sim" output="screen" >
+    <node pkg="swan_sim" type="constant_speed_sim" name="constant_speed_sim" output="screen" >
         <param name="forward_speed" value="0.5" />
         <param name="send_transform" value="false" />
         <param name="frame_id" value="odom_gps" />
         <param name="child_frame_id" value="base_link" />
         <remap from="imu" to="os5000_data" />
-    </node-->
+    </node>
 
 
     <node pkg="gps_tools" type="utm_tf_node" name="fix_translator" output="screen">
         <remap from="odom" to="gps_odom" />
+        <remap from="imu" to="os5000_data" />
         <rosparam>
             frame_id: odom
             child_frame_id: base_link
@@ -31,8 +32,8 @@
             frame_id: odom
             child_frame_id: map
             frequency: 20
-            latitude: 1.31684333333 
-            longitude: 103.74813
+            latitude: 1.29184166667 
+            longitude: 103.775415
             altitude: 0
             rot_covariance: 100
         </rosparam>
