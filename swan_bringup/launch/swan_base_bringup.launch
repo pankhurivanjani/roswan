@@ -39,10 +39,10 @@
             ki: 0
             kd: 0
             type: HEADING
-            pwr_min: 0.4
+            pwr_min: 0.75
             pwr_max: 0.9
             speed_min: 0
-            speed_max: 2
+            speed_max: 0.85  
             min_gain: 0.05
             max_no_cmd_time: 0.5
             stop_cmd_duration: 0.2
