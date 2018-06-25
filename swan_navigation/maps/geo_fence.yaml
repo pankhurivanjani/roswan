@@ -1,0 +1,9 @@
+free_thresh: 0.196
+image: geo_fence.pgm
+negate: 0
+occupied_thresh: 0.65
+origin:
+- -2007.0074597996427
+- -1600.3947717445408
+- 0
+resolution: 1
