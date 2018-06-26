@@ -32,6 +32,7 @@ Base_Odom::Base_Odom(double _forward_speed = 0.5)
     t = 0;
     dt = 0;
 
+    ros::Duration(10).sleep();
     while(n.ok()){
         ros::spinOnce();
         current_time = ros::Time::now();
@@ -45,7 +46,12 @@ Base_Odom::Base_Odom(double _forward_speed = 0.5)
 }
 
 void Base_Odom::update_yaw(const sensor_msgs::Imu::ConstPtr& msg){
-    th = tf::getYaw(msg->orientation);
+    tf::Quaternion heading, yaw_offset;
+    tf::quaternionMsgToTF(msg->orientation, heading);
+    yaw_offset = tf::createQuaternionFromYaw(M_PI / 2);
+    heading *= yaw_offset;
+    th = tf::getYaw(heading);
+
 }
 
 
