@@ -1,11 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-    <param name="use_sim_time" value="true" />
-
-    <node pkg="rosbag" type="play" name="gps_compass_player" output="screen" args="--clock --pause -r 1 -s 0 $(find swan_bringup)/../bag/motion_test2_2018-06-19-11-54-25.bag" /><!-- -s 290 -r 1 $(find swan_bringup)/../bag/_2018-05-22-17-08-17_corrected.bag" /-->
+    <!--param name="use_sim_time" value="true" /-->
 
 
-    <node pkg="gps_tools" type="utm_tf_node" name="fix_translator" output="screen">
+
+    <!--node pkg="swan_localization" type="sensor_odom_estimator" name="sensor_odom_estimator">
         <remap from="odom" to="odom1" />
         <rosparam>
             frame_id: odom
@@ -17,14 +16,25 @@
             use_map_frame: true
         </rosparam>
         <rosparam file="$(find swan_navigation)/maps/centre.yaml" command="load" />
-    </node>
+    </node-->
 
-    <node pkg="swan_sim" type="constant_speed_sim" name="constant_speed_sim" >
+    <!--node pkg="swan_sim" type="constant_speed_sim" name="constant_speed_sim" >
         <param name="frame_id" value="odom" />
         <param name="child_frame_id" value="base_link" />
         <param name="send_transform" value="false" />
         <param name="forward_speed" value="0.8" />
         <remap from="odom" to="odom2" />
+    </node-->
+    
+    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator">
+        <rosparam>
+            frequency: 20
+            frame_id: odom
+            child_frame_id: base_link
+            send_transform: true
+            sim_mode: true
+            holonomic: false
+        </rosparam>
     </node>
 
     <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom 100" />
@@ -33,7 +43,7 @@
 
     <node pkg="tf" type="static_transform_publisher" name="gps_tf_publisher" args="0 0 0 0 0 0 base_link gps 100" />
     
-    <node pkg="robot_localization" type="ekf_localization_node" name="robot_pose_ekf" output="screen">
+    <!--node pkg="robot_localization" type="ekf_localization_node" name="robot_pose_ekf" output="screen">
         <rosparam>
             frequency: 10
             sensor_timeout: 0.1
@@ -64,10 +74,11 @@
 
     <node pkg="fake_localization" type="fake_localization" name="fake_localization">
         <remap from="base_pose_ground_truth" to="odom" />
-    </node>
+    </node-->
 
 
     <include file="$(find swan_navigation)/launch/navigate.launch" />
 
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find swan_bringup)/rviz/swan_navigation.rviz" />
 </launch>
 

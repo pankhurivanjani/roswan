@@ -12,6 +12,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>move_base</depend>
+  <depend>map_server</depend>
+  <depend>fake_localization</depend>
 
 
   <export>

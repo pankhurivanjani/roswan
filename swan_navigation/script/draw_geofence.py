@@ -8,7 +8,7 @@ import utm
 rospack = rospkg.RosPack()
 package_path = rospack.get_path('swan_navigation')
 json_fn = "geo_fence.json"
-resolution = 1
+resolution = 0.5
 
 def draw_polygon_map(pkg_path, resolution, json_filename):
     with open(pkg_path + "/maps/" + json_filename, "r") as geo_fence_file:
