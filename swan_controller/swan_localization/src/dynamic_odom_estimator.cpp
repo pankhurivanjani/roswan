@@ -103,7 +103,7 @@ void DynamicOdomEstimator::initialpose_callback(const geometry_msgs::PoseWithCov
     dynamic_params.x = msg->pose.pose.position.x;
     dynamic_params.y = msg->pose.pose.position.y;
     dynamic_params.z = msg->pose.pose.position.z;
-    dynamic_params.th = tf::getYaw(msg->pose.pose.orientation);
+    dynamic_params.th = tf2::getYaw(msg->pose.pose.orientation);
     dynamic_params.initiated = true;
 }
 
@@ -112,7 +112,7 @@ void DynamicOdomEstimator::initialodom_callback(const nav_msgs::Odometry::ConstP
         dynamic_params.x = msg->pose.pose.position.x;
         dynamic_params.y = msg->pose.pose.position.y;
         dynamic_params.z = msg->pose.pose.position.z;
-        dynamic_params.th = tf::getYaw(msg->pose.pose.orientation);
+        dynamic_params.th = tf2::getYaw(msg->pose.pose.orientation);
         dynamic_params.initiated = true;
     }
 }
@@ -125,7 +125,9 @@ const void DynamicOdomEstimator::pub_odom() const{
     odom.pose.pose.position.x = dynamic_params.x;
     odom.pose.pose.position.y = dynamic_params.y;
     odom.pose.pose.position.z = dynamic_params.z;
-    odom.pose.pose.orientation = tf::createQuaternionMsgFromYaw(dynamic_params.th);
+    tf2::Quaternion qt;
+    qt.setRPY(0,0, dynamic_params.th);
+    tf2::convert(qt, odom.pose.pose.orientation);
     odom.twist.twist.linear.x = dynamic_params.vx;
     odom.twist.twist.linear.y = dynamic_params.vy;
     odom.twist.twist.angular.z = dynamic_params.vth;
@@ -141,7 +143,9 @@ const void DynamicOdomEstimator::pub_tf(){
     odom_trans.transform.translation.x = dynamic_params.x;
     odom_trans.transform.translation.y = dynamic_params.y;
     odom_trans.transform.translation.z = dynamic_params.z;
-    odom_trans.transform.rotation = tf::createQuaternionMsgFromYaw(dynamic_params.th);
-    tf_broadcaster.sendTransform(odom_trans);
+    tf2::Quaternion qt;
+    qt.setRPY(0,0, dynamic_params.th);
+    tf2::convert(qt, odom_trans.transform.rotation);
+    tf2_broadcaster.sendTransform(odom_trans);
     
 }

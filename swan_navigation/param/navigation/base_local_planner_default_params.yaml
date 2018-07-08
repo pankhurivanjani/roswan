@@ -11,6 +11,7 @@ TrajectoryPlannerROS:
 
   xy_goal_tolerance: 1.5
   yaw_goal_tolerance: 0.25
+  latch_xy_goal_tolerance: true
 
   occdist_scale: 0
   heading_lookahead: 1.0

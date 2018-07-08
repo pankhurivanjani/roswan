@@ -13,8 +13,8 @@
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Quaternion.h>
-#include <tf/transform_broadcaster.h>
-#include <tf/transform_datatypes.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_ros/transform_broadcaster.h>
 #include <string>
 
 #include <gps_common/conversions.h>
@@ -27,8 +27,7 @@ protected:
     ros::Subscriber fix_sub, imu_sub;
     ros::Publisher odom_pub;
     
-    // TF publisher
-    tf::TransformBroadcaster tf_broadcaster;
+    tf2_ros::TransformBroadcaster tf_broadcaster;
     geometry_msgs::TransformStamped fix_trans;
 
     // msg to publish

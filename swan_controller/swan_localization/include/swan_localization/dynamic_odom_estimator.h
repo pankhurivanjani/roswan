@@ -13,7 +13,11 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <sensor_msgs/NavSatFix.h>
 #include <nav_msgs/Odometry.h>
-#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/utils.h>
+#include <tf2/convert.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <string>
 #include <exception>
@@ -38,7 +42,7 @@ protected:
 
     // Publisher for odom and tf
     ros::Publisher odom_pub;
-    tf::TransformBroadcaster tf_broadcaster;
+    tf2_ros::TransformBroadcaster tf2_broadcaster;
 
     // current time
     int frequency;

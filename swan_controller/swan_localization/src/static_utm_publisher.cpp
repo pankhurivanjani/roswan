@@ -17,8 +17,9 @@ public:
         ros::Rate r(frequency);
         
         gps_common::LLtoUTM(latitude, longitude, northing, easting, zone);
-        fix_trans.transform.rotation = tf::createQuaternionMsgFromRollPitchYaw(0,0,0);
-
+        tf2::Quaternion q;
+        q.setRPY(0, 0, 0);
+        tf2::convert(q, fix_trans.transform.rotation);
         while(n.ok()){
             ros::spinOnce();
             pub_tf();
