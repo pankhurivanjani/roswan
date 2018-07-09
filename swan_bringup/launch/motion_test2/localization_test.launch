@@ -69,4 +69,5 @@
             publish_tf: true
         </rosparam>
         <remap from="odometry/filtered" to="odom" />
-    </node>>
+    </node>
+</launch>
