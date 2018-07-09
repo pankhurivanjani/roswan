@@ -28,7 +28,7 @@ const void DynamicOdomEstimator::run(){
         while(n.ok()){
             ros::spinOnce();
             current_time = ros::Time::now().toSec();
-            if(failsafe_estimate())
+            if(!failsafe_estimate())
                 loop();
             last_time = current_time;
 

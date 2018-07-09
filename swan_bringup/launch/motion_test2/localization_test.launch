@@ -33,6 +33,8 @@
             send_transform: false
             sim_mode: false
             holonomic: false
+            max_no_cmd_time: 0.5
+            stop_cmd_duration: 0.2
         </rosparam>
     </node>
 

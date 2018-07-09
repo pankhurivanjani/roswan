@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator">
+    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator" output="screen">
         <rosparam>
             frequency: 20
             frame_id: odom2
