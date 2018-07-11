@@ -54,6 +54,9 @@ const void Captain::loiter(){
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.frame_id = "map";
     goal.target_pose.pose = odom.pose.pose;
+        tf2::Quaternion q;
+        q.setRPY(0, 0, 0);
+        tf2::convert(q, goal.target_pose.pose.orientation);
     tf2::Transform loiter_pose;
     tf2::convert(goal.target_pose.pose, loiter_pose);
     ROS_INFO("Start loitering...");

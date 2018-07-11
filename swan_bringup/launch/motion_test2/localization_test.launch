@@ -24,8 +24,9 @@
     </node>
 
     
-    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator">
+    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator" output="screen">
         <remap from="odom" to="odom2" />
+        <remap from="initialodom" to="odom1" />
         <rosparam>
             frequency: 20
             frame_id: odom

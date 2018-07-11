@@ -35,9 +35,9 @@
             enable_joy: false
             enable_key: true
             enable_pid: true
-            kp: 0.5
+            kp: 1.0
             ki: 0
-            kd: 0
+            kd: 1.0
             type: HEADING
             pwr_min: 0.75
             pwr_max: 0.9
