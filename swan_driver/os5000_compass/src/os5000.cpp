@@ -13,7 +13,7 @@ static int numOpenTries;
 CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
     :isCalib(false), baudRate(B19200), nh(), pnh("~")
 {
-    badY = badR = badP = 0;
+    badY = badR = badP = 1;
     pnh.param("devicePath", devicePath, std::string("/dev/compass"));
     pnh.param("updateFrequency", updateDelay, int(40));
     pnh.param("frame_id", frame_id, std::string("compass"));
@@ -25,7 +25,7 @@ CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
         lastFileOpen = ros::Time::now().toSec();
     }
     ros::Timer timer = nh.createTimer(ros::Duration(1 / updateDelay), &CompassDriverLinuxOS5000::timerCallback, this);
-    compass_pub = nh.advertise<sensor_msgs::Imu>("os5000_compass", 10);
+    compass_pub = nh.advertise<sensor_msgs::Imu>("os5000", 10);
     serial_thread = new boost::thread(boost::bind(&CompassDriverLinuxOS5000::run, this));
     if(nh.ok())
         ros::spin();
@@ -73,7 +73,7 @@ void CompassDriverLinuxOS5000::sendImuMsg(float _yaw, float _pitch, float _roll)
     tf2::Quaternion qt;
     qt.setRPY(_roll, _pitch, _yaw);
     tf2::convert(qt, compass_msg.orientation);
-    compass_pub.publish(compass_msg.orientation);
+    compass_pub.publish(compass_msg);
 }
 
 int CompassDriverLinuxOS5000::openSerialPort(int baud){
@@ -187,7 +187,7 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
                 if(!badP && fabs(pitch1 - pitch) > 0.5)
                     badP = 1;
                 else{
-                    pitch = pitch1;
+                    pitch = -pitch1;
                     badP = 0;
                 }
                 break;
@@ -210,6 +210,7 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
                     temperature = temp1;
                 break;
         }
+        ROS_INFO("yaw: %.2f, pitch: %.2f, roll: %.2f, temp: %.2f", yaw, pitch, roll, temperature);
 
         // Move the read pointer till the next comma
         while (*p && *p != ',' && p != end) p++;
@@ -218,6 +219,8 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
             ROS_WARN("Ended prematurely %d - %d\n", f, *p);
             return -1;
         }
+        // move one char forward to the next data-field
+        p++;
     }
 }
 
