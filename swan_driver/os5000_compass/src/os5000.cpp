@@ -16,6 +16,7 @@ CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
     badY = badR = badP = 0;
     pnh.param("devicePath", devicePath, std::string("/dev/compass"));
     pnh.param("updateFrequency", updateDelay, int(40));
+    pnh.param("frame_id", frame_id, std::string("compass"));
     numOpenTries = 0;
     sbuf[0] = 0;
 
@@ -24,6 +25,7 @@ CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
         lastFileOpen = ros::Time::now().toSec();
     }
     ros::Timer timer = nh.createTimer(ros::Duration(1 / updateDelay), &CompassDriverLinuxOS5000::timerCallback, this);
+    compass_pub = nh.advertise<sensor_msgs::Imu>("os5000_compass", 10);
     serial_thread = new boost::thread(boost::bind(&CompassDriverLinuxOS5000::run, this));
     if(nh.ok())
         ros::spin();
@@ -59,10 +61,20 @@ void CompassDriverLinuxOS5000::timerCallback(const ros::TimerEvent& event){
     mtx.unlock();
     // process incoming data
     if(rbuf[0]){
-        parseString(rbuf, &(rbuf[BUF_SIZE-1]));    
+        parseString(rbuf, &(rbuf[BUF_SIZE-1]));
+        sendImuMsg(yaw, pitch, roll);
     }
 }
 
+void CompassDriverLinuxOS5000::sendImuMsg(float _yaw, float _pitch, float _roll){
+    sensor_msgs::Imu compass_msg;
+    compass_msg.header.stamp = ros::Time::now();
+    compass_msg.header.frame_id = frame_id;
+    tf2::Quaternion qt;
+    qt.setRPY(_roll, _pitch, _yaw);
+    tf2::convert(qt, compass_msg.orientation);
+    compass_pub.publish(compass_msg.orientation);
+}
 
 int CompassDriverLinuxOS5000::openSerialPort(int baud){
     char updateDelayStr[6] = {0};
@@ -219,14 +231,9 @@ void CompassDriverLinuxOS5000::run(){
         n = getline(&tbuf, &bufSize, file);
         ROS_DEBUG("r : %d - %s\n", n, tbuf);
         for(int i = 0; i < n; i++){
-            if(i == 0){
-                mtx.lock();
-                sbuf[i] = tbuf[i];
-                mtx.unlock();
-            }
-            else{
-                sbuf[i] = tbuf[i];
-            }
+            mtx.lock();
+            sbuf[i] = tbuf[i];
+            mtx.unlock();
         }
         // Null terminate for safety;
         sbuf[sizeof(sbuf)-1]  = '\0';

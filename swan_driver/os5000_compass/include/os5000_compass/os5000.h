@@ -6,6 +6,9 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2/convert.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -31,6 +34,7 @@ protected:
     ros::NodeHandle nh;
     ros::NodeHandle pnh;
     ros::Publisher compass_pub;
+    std::string frame_id;
 
 public:
     CompassDriverLinuxOS5000();
@@ -38,6 +42,6 @@ public:
     int parseString(char* string, char* end);
     void run();
     void timerCallback(const ros::TimerEvent& event);
-
+    void sendImuMsg(float _yaw, float _pitch, float _roll);
 };
 #endif
