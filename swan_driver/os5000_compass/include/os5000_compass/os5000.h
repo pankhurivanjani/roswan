@@ -5,6 +5,7 @@
 #include <sensor_msgs/Imu.h>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread.hpp>
+#include <boost/bind.hpp>
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
@@ -27,7 +28,7 @@ protected:
     boost::thread* serial_thread;
 
     // ROS nodes and params
-    ros::NodeHandle n;
+    ros::NodeHandle nh;
     ros::NodeHandle pnh;
     ros::Publisher compass_pub;
 

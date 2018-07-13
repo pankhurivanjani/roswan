@@ -11,7 +11,7 @@ static double lastFileOpen;
 static int numOpenTries;
 
 CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
-    :isCalib(true), baudRate(B19200), n(), pnh("~")
+    :isCalib(false), baudRate(B19200), nh(), pnh("~")
 {
     badY = badR = badP = 0;
     pnh.param("devicePath", devicePath, std::string("/dev/compass"));
@@ -23,9 +23,9 @@ CompassDriverLinuxOS5000::CompassDriverLinuxOS5000()
         ROS_INFO("Serial port %s opened at baud rate %d", devicePath.c_str(), (int)baudRate);
         lastFileOpen = ros::Time::now().toSec();
     }
-    ros::Timer timer = n.createTimer(ros::Duration(1 / updateDelay), &CompassDriverLinuxOS5000::timerCallback, this);
-    serial_thread = new boost::thread(boost::bind(&CompassDriverLinuxOS5000::serial_thread, this));
-    if(n.ok())
+    ros::Timer timer = nh.createTimer(ros::Duration(1 / updateDelay), &CompassDriverLinuxOS5000::timerCallback, this);
+    serial_thread = new boost::thread(boost::bind(&CompassDriverLinuxOS5000::run, this));
+    if(nh.ok())
         ros::spin();
     serial_thread->join();
 }
@@ -57,7 +57,6 @@ void CompassDriverLinuxOS5000::timerCallback(const ros::TimerEvent& event){
         sbuf[0] = 0;
     }
     mtx.unlock();
-
     // process incoming data
     if(rbuf[0]){
         parseString(rbuf, &(rbuf[BUF_SIZE-1]));    
@@ -112,13 +111,12 @@ void CompassDriverLinuxOS5000::sendCmd(int len, const char* buf){
         write(fd, &buf[i], 1);
         usleep(OS5000_SERIAL_DELAY);
     }
-    //ROS_INFO("Sent command %02x", buf);
 }
 
 
 
 int CompassDriverLinuxOS5000::parseString(char* string, char* end){
-    ROS_INFO("parsing %s\n", string);
+    ROS_DEBUG("parsing %s\n", string);
 
     // Ensure that we are starting with form the beginning of OHPR string
     
@@ -217,9 +215,9 @@ void CompassDriverLinuxOS5000::run(){
     size_t bufSize = BUF_SIZE;
     char* tbuf;
     FILE* file = fdopen(fd, "r");
-    while(true){
+    while(nh.ok()){
         n = getline(&tbuf, &bufSize, file);
-        printf("r : %d - %s\n", n, tbuf);
+        ROS_DEBUG("r : %d - %s\n", n, tbuf);
         for(int i = 0; i < n; i++){
             if(i == 0){
                 mtx.lock();
