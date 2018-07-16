@@ -38,7 +38,7 @@ public:
     const void pid_setup();
     void pid_reconfigure_callback(swan_controller::swanPIDConfig &config, uint32_t level);
     const void diagnostic_pub();
-        
+    void debug_display();
 };
 
 #endif

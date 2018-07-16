@@ -4,36 +4,41 @@
 Controller::Controller()
     :heading(3 * M_PI), turn(0)
 {
-    ;
+    _heading = heading;
 }
 Controller::~Controller(){
-    ;
+    delete r, spin_thread;
 }
 
 
 const void Controller::run(){
     basic_setup();
+    current_time = last_time = last_cmd_time = ros::Time::now().toSec();
+    spin_thread = new boost::thread(boost::bind(&Controller::spinThread, this));
+
     setup();
     if(n.ok())
         stop();
-    ros::Rate r(frequency);
+    r = new ros::Rate(frequency);
     ros::Duration(0.5).sleep();
-    current_time = last_time = last_cmd_time = ros::Time::now().toSec();
     try{
         while(n.ok()){
-            ros::spinOnce();
             current_time = ros::Time::now().toSec();
+            update_spinparams();
             loop();
             last_time = current_time;
-            r.sleep();
+            failsafe();
+            r->sleep();
         }
         stop();
         std::cout << "\033[0;33mController Stopped!\033[0m" << std::endl;
+        spin_thread->join();
     }
     catch(std::exception& e){
         stop();
         std::cout << "\033[0;31m" << e.what() <<"\033[0m" << std::endl;
         std::cout << "\033[0;31mController Stopped!\033[0m" << std::endl;
+        spin_thread->join();
     }
 }
 
@@ -75,38 +80,47 @@ const void Controller::basic_setup(){
 
 
 void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
-    ;
-    last_cmd_time = ros::Time::now().toSec();
+    mtx.lock();
+    _last_cmd_time = ros::Time::now().toSec();
+    mtx.unlock();
 }
 
 
 
 void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
-    key_speed = msg->linear.x;
-    key_turn = msg->angular.z;
-    last_cmd_time = ros::Time::now().toSec();
+    mtx.lock();
+    _key_speed = msg->linear.x;
+    _key_turn = msg->angular.z;
+    _last_cmd_time = ros::Time::now().toSec();
+    mtx.unlock();
 }
 
 
 
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
-    last_heading = heading;
-    heading = tf2::getYaw(imu->orientation);
-    double dt = ros::Time::now().toSec() - last_time;
-    turn = (heading - last_heading) / dt;
+    mtx.lock();
+    _heading = tf2::getYaw(imu->orientation);
+    mtx.unlock();
 }
 
 
 
 const bool Controller::failsafe(){
     double no_cmd_time = current_time - last_cmd_time;
-    if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
-        stop();
-        ROS_WARN("Calling failsafe");
+    if(no_cmd_time > MAX_NO_CMD_TIME){
+        ROS_WARN("Failsafe activates");
+        while(n.ok() && no_cmd_time > MAX_NO_CMD_TIME){
+            current_time = ros::Time::now().toSec();
+            update_spinparams();
+            no_cmd_time = current_time - last_cmd_time;
+            if(no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
+                stop();
+            r->sleep();
+            last_time = current_time;
+        }
+        ROS_INFO("Recieve command! Failsafe disabled.");
         return true;
     }
-    else if(no_cmd_time >= (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
-        return true;
     else
         return false;
 }
@@ -128,4 +142,25 @@ void Controller::setup(){
 void Controller::stop(){
     ;
 }
+
+void Controller::spinThread(){
+    ros::spin();
+}
+void Controller::update_spinparams(){
+    mtx.lock();
+    last_cmd_time = _last_cmd_time;
+    key_speed = key_speed;
+    key_turn = _key_turn;
+    heading = _heading;
+    mtx.unlock();
+    turn = (heading - last_heading) / (current_time - last_time);
+    last_heading = heading;
+    if(mode == "DEBUG")
+        debug_display();
+}
+
+void Controller::debug_display(){
+    ;
+}
+
 

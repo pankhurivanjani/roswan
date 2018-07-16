@@ -14,10 +14,19 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <string>
 
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/bind.hpp>
+
 
 class Controller{
 protected:
     ros::NodeHandle n;
+    ros::Rate* r;
+
+    boost::mutex mtx;
+    boost::thread* spin_thread;
+    double _last_cmd_time, _key_speed, _key_turn, _heading;
 
     /*  Publisher and Subscriber  */
     // Subscriber for joy and keyboard testing
@@ -90,6 +99,9 @@ public:
     virtual void loop();
     virtual void stop();
 
+    void spinThread();
+    void update_spinparams();
+    virtual void debug_display();
 
 };
 
