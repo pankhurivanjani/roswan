@@ -28,10 +28,8 @@ const void DynamicOdomEstimator::run(){
         while(n.ok()){
             ros::spinOnce();
             current_time = ros::Time::now().toSec();
-            if(!failsafe_estimate())
-                loop();
+            loop();
             last_time = current_time;
-
             r.sleep();
         }
     }
@@ -84,6 +82,7 @@ const void DynamicOdomEstimator::setup(){
 
 void DynamicOdomEstimator::loop(){
     dynamic_params.dt = current_time - last_time;
+    failsafe_estimate();
     update_position(dynamic_params);
     pub_odom();
     if(send_transform)
