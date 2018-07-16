@@ -46,6 +46,12 @@ const void Controller::basic_setup(){
     ros::param::param<std::string>("~mode", mode, "STANDARD");
     imu_sub = n.subscribe("imu", 1, &Controller::imu_callback, this);
 
+
+    if(mode != "DEBUG" && mode != "STANDARD"){
+        ROS_WARN("Wrong mode type. using STANDARD as default");
+        mode = "STANDARD";
+    }
+
     if(mode == "DEBUG"){
         ros::param::param<bool>("~enable_joy", enable_joy, false);
         if(enable_joy){
@@ -58,11 +64,9 @@ const void Controller::basic_setup(){
         ros::param::param<bool>("~enable_pid", enable_pid, true);
     }
     else if(mode == "STANDARD"){
-        ;
-    }
-    else{
-        ROS_WARN("Wrong mode type. using STANDARD as default");
-        mode = "STANDARD";
+        enable_joy = false;
+        enable_pid = enable_key = true;
+        key_sub = n.subscribe("cmd_vel", 1, &Controller::key_callback, this);
     }
     ros::param::param<double>("~max_no_cmd_time", MAX_NO_CMD_TIME, 0.2);
     ros::param::param<double>("~stop_cmd_duration", STOP_CMD_DURATION, 0.2);
@@ -87,7 +91,7 @@ void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
 
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
     last_heading = heading;
-    heading = tf::getYaw(imu->orientation);
+    heading = tf2::getYaw(imu->orientation);
     double dt = ros::Time::now().toSec() - last_time;
     turn = (heading - last_heading) / dt;
 }
@@ -98,6 +102,7 @@ const bool Controller::failsafe(){
     double no_cmd_time = current_time - last_cmd_time;
     if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
         stop();
+        ROS_WARN("Calling failsafe");
         return true;
     }
     else if(no_cmd_time >= (MAX_NO_CMD_TIME + STOP_CMD_DURATION))

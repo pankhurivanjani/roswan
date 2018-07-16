@@ -18,16 +18,12 @@ void Diff_Controller::setup(){
     ros::param::param<double>("~speed_min", speed_min, 0);
     ros::param::param<double>("~speed_max", speed_max, 2);
     ros::param::param<double>("~gain_min", min_gain, 0.05);
+    ROS_INFO("Waiting for compass value");
     while(n.ok()){
         ros::spinOnce();
         if(heading >= -M_PI && heading <= M_PI){
+            ROS_INFO("Compass value recieved!");
             break;
-        }
-        if(heading == 3 * M_PI){
-            ROS_WARN("Compass values not available");
-        }
-        else{
-            ROS_WARN("Heading out of range, heading: %f", heading);
         }
         ros::Rate(frequency).sleep();
     }
@@ -80,7 +76,8 @@ void Diff_Controller::loop(){
         //ROS_INFO("desired_heading = %.5f", desired_heading);
         diff_drive(cmd_speed, cmd_turn);
     }
-    diagnostic_pub();
+    if(mode == "DEBUG")
+        diagnostic_pub();
 }
 
 void Diff_Controller::diff_drive(const double _speed, const double _turn){

@@ -26,6 +26,7 @@ const void PID_Controller::pid_setup(){
         ros::param::param<double>("~kp", kp, 1);
         ros::param::param<double>("~ki", ki, 0);
         ros::param::param<double>("~kd", kd, 0);
+        ROS_INFO("Initialize with PID Constants: kp=%.2f,\tki=%.2f,\tkd=%.2f.", kp, ki, kd);
     }
     err = input = feedback = p_gain = i_gain = d_gain = 0;
 }
