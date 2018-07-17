@@ -87,7 +87,7 @@ protected:
 
 public:
     Controller();
-    ~Controller();
+    virtual ~Controller();
 
     const void run();
     const void basic_setup();

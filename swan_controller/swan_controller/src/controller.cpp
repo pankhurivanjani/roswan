@@ -149,7 +149,7 @@ void Controller::spinThread(){
 void Controller::update_spinparams(){
     mtx.lock();
     last_cmd_time = _last_cmd_time;
-    key_speed = key_speed;
+    key_speed = _key_speed;
     key_turn = _key_turn;
     heading = _heading;
     mtx.unlock();
