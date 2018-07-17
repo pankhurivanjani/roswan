@@ -133,7 +133,7 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
     // Ensure that we are starting with form the beginning of OHPR string
     
     char* start = strchr(string, '$');
-    if (strlen(start) < 7 || strncmp(start, "$OHPR,", 6)){
+    if (start == NULL || strlen(start) < 7 || strncmp(start, "$OHPR,", 6)){
         ROS_WARN("Warning: non-OHPR string\n");
         return 0;
     }
@@ -172,7 +172,7 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
                     badY = 1;
                 else{
                     heading = heading1;
-                    yaw = (90 - heading) * M_PI / 180;
+                    yaw = ( - heading) * M_PI / 180;
                     while(yaw < -M_PI)
                         yaw += 2 * M_PI;
                     while(yaw >= M_PI)
@@ -210,7 +210,6 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
                     temperature = temp1;
                 break;
         }
-        ROS_INFO("yaw: %.2f, pitch: %.2f, roll: %.2f, temp: %.2f", yaw, pitch, roll, temperature);
 
         // Move the read pointer till the next comma
         while (*p && *p != ',' && p != end) p++;
@@ -222,6 +221,7 @@ int CompassDriverLinuxOS5000::parseString(char* string, char* end){
         // move one char forward to the next data-field
         p++;
     }
+    ROS_DEBUG("yaw: %.2f, pitch: %.2f, roll: %.2f, temp: %.2f", yaw, pitch, roll, temperature);
 }
 
 
