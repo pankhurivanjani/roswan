@@ -50,36 +50,42 @@ const void Captain::simple_point_mission(const std::vector<std::vector<double> >
 
 
 const void Captain::loiter(){
-    ros::spinOnce();
+    ROS_INFO("Waiting for valid odom.");
+    while(odom.pose.pose.orientation.w == 0){
+        ros::spinOnce();
+    }
     move_base_msgs::MoveBaseGoal goal;
     goal.target_pose.header.frame_id = "map";
     goal.target_pose.pose = odom.pose.pose;
-        tf2::Quaternion q;
-        q.setRPY(0, 0, 0);
-        tf2::convert(q, goal.target_pose.pose.orientation);
+    ROS_INFO("Goal: (%.2f, %.2f) sent", goal.target_pose.pose.position.x, goal.target_pose.pose.position.y);
     tf2::Transform loiter_pose;
     tf2::convert(goal.target_pose.pose, loiter_pose);
     ROS_INFO("Start loitering...");
-    while(true){
+    while(n.ok()){
         ros::spinOnce();
         tf2::Transform current_pose;
         tf2::convert(odom.pose.pose, current_pose);
         double distance_from_goal = tf2::tf2Distance(loiter_pose.getOrigin(), current_pose.getOrigin());
-        ROS_INFO("%.2f", distance_from_goal);
+        ROS_DEBUG("Distance from goal: %.2f", distance_from_goal);
         if(distance_from_goal >= 5){
-            ROS_INFO("Out of loiter range, traveling back...");
+            ROS_INFO("Out of loiter range by %.2f, traveling back...", distance_from_goal);
             ac.sendGoal(goal);
             if(ac.waitForResult()){
-                ROS_INFO("Back to position");
+                ROS_INFO("Result: %s", ac.getState().toString().c_str());
             }
         }
         ros::Duration(0.5).sleep();
-        ROS_INFO("a");
 
     }
 
 }
 
 void Captain::odom_callback(const nav_msgs::OdometryConstPtr& msg){
-    odom = *msg;
+    odom.pose.pose.position.x = msg->pose.pose.position.x;
+    odom.pose.pose.position.y = msg->pose.pose.position.y;
+    odom.pose.pose.position.z = msg->pose.pose.position.z;
+    odom.pose.pose.orientation.x = msg->pose.pose.orientation.x;
+    odom.pose.pose.orientation.y = msg->pose.pose.orientation.y;
+    odom.pose.pose.orientation.z = msg->pose.pose.orientation.z;
+    odom.pose.pose.orientation.w = msg->pose.pose.orientation.w;
 }
