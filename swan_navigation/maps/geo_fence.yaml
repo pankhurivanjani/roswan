@@ -3,7 +3,7 @@ image: geo_fence.pgm
 negate: 0
 occupied_thresh: 0.65
 origin:
-- -2007.0074597996427
-- -1600.3947717445408
+- -1003.5037298998213
+- -800.1973858722704
 - 0
 resolution: 0.5

@@ -44,8 +44,8 @@ def draw_polygon_map(pkg_path, resolution, json_filename):
             max_y_m = abs(y_m)
         points_in_map.append([x_m / resolution, -y_m / resolution])
 
-    width_m = max_x_m * 5
-    height_m = max_y_m * 5
+    width_m = max_x_m * 2.5
+    height_m = max_y_m * 2.5
     width = int(width_m / resolution)
     height = int(height_m / resolution)
 

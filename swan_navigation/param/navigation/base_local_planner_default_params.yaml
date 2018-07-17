@@ -15,6 +15,6 @@ TrajectoryPlannerROS:
 
   occdist_scale: 0
   heading_lookahead: 1.0
-  publish_cost_grid_pc: true
+  #publish_cost_grid_pc: true
 
   holonomic_robot: false
