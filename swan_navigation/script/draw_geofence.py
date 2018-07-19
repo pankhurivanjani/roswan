@@ -7,7 +7,7 @@ import utm
 
 rospack = rospkg.RosPack()
 package_path = rospack.get_path('swan_navigation')
-json_fn = "geo_fence.json"
+json_fn = "i3.json"
 resolution = 0.5
 
 def draw_polygon_map(pkg_path, resolution, json_filename):
@@ -55,11 +55,11 @@ def draw_polygon_map(pkg_path, resolution, json_filename):
     filename = json_filename.replace(".json", "")
     im_filename = filename + ".pgm"
     yaml_filename = filename + ".yaml"
-    centre_yaml_filename = "centre.yaml"
+    centre_yaml_filename = filename + "centre.yaml"
 
     im = Image.new("L", (width, height), 205)
     ImageDraw.Draw(im).polygon(points_in_map, 254, 0)
-    im.save(pkg_path + "/maps/geo_fence.pgm")
+    im.save(pkg_path + "/maps/" + im_filename)
 
     param = dict()
     param["image"] = im_filename

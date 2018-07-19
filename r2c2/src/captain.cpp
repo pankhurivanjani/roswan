@@ -32,9 +32,13 @@ const void Captain::simple_point_mission(const std::vector<std::vector<double> >
         goal.target_pose.pose.position.x = mission_points[i][0];
         goal.target_pose.pose.position.y = mission_points[i][1];
         goal.target_pose.pose.position.z = 0;
-        tf2::Quaternion q;
-        q.setRPY(0, 0, 0);
-        tf2::convert(q, goal.target_pose.pose.orientation);
+        if(i < mission_points.size() - 1){
+        	double dx = mission_points[i + 1][0] - mission_points[i][0];
+        	double dy = mission_points[i + 1][1] - mission_points[i][1];
+            tf2::Quaternion q;
+            q.setRPY(0, 0, atan2(dy, dx));
+            tf2::convert(q, goal.target_pose.pose.orientation);
+        }
 
         ac.sendGoal(goal);
 
