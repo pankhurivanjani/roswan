@@ -4,5 +4,6 @@ global_costmap:
   update_frequency: 0.05 #before: 5.0
   publish_frequency: 0.5 #before 0.5
   static_map: true
+  first_map_only: true
   transform_tolerance: 0.3
   track_unknown_space: false
