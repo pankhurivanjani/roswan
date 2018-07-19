@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="nmea_navsat_driver" type="nmea_serial_driver" name="gps_driver">
+		<rosparam command="load" file="$(find swan_bringup)/params/drivers/gps_nmea.yaml" />
+	</node>
+</launch>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+	<node name="env_setup" pkg="swan_bringup" type="setup.sh" />
+
+	<include file="$(find swan_bringup)/launch/include/drivers.launch.xml">
+		<arg name="thruster_type" value="$(env THRUSTER)" />
+		<arg name="imu_type" value="$(env IMU)"  />
+		<arg name="gps_type" value="$(env GPS)" />
+	</include>
+	
+	<include file="$(find swan_bringup)/launch/include/controller.launch.xml">
+		<arg name="controller_type" value="$(env CONTROLLER)" />
+		<arg name="controller_config" value="standard_auto"  />
+	</include>
+	
+	<include file="$(find swan_bringup)/launch/include/localization.launch.xml">
+		<arg name="map" value="$(env MAP)" />
+	</include>
+
+	<include file="$(find swan_bringup)/launch/include/tf.launch.xml"/>
+	
+    <include file="$(find swan_navigation)/launch/navigate.launch" />
+
+
+	
+	
+	
+</launch>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="trex_driver" type="trex_driver.py" name="trex_driver">
+		<remap from="trex_driver/pwm00" to="l_motor" />
+		<remap from="trex_driver/pwm01" to="r_motor" />
+		<rosparam command="load" file="$(find swan_bringup)/params/drivers/trex_driver.yaml" />
+	</node>
+</launch>

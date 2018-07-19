@@ -1,0 +1,4 @@
+devicePath: /dev/compass
+updateFrequency: 40
+frame_id: compass
+publish_topic: imu 

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="os5000_compass" type="os5000_compass" name="os5000">
+		<rosparam command="load" file="$(find swan_bringup)/params/drivers/os5000_compass.yaml" />
+	</node>
+</launch>

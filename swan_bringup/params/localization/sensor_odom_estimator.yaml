@@ -1,0 +1,7 @@
+frame_id: odom
+child_frame_id: base_link
+publish_transform: false
+use_imu_orientation: true
+frequency: 20
+rot_covariance: 100
+use_map_frame: true
