@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-	<node name="env_setup" pkg="swan_bringup" type="setup.sh" />
 
 	<include file="$(find swan_bringup)/launch/include/drivers.launch.xml">
 		<arg name="thruster_type" value="$(env THRUSTER)" />

@@ -1,9 +1,9 @@
 frequency: 20
-mode: STANDARD
+mode: DEBUG
 kp: 1.0
 ki: 0
 kd: 1.0
-type: HEADING
+type: TURN
 min_gain: 0.5
-max_no_cmd_time: 0.7
+max_no_cmd_time: 0.8
 stop_cmd_duration: 0.2

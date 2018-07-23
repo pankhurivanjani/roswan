@@ -14,7 +14,7 @@
   <depend>move_base</depend>
   <depend>map_server</depend>
   <depend>fake_localization</depend>
-
+  <depend>global_planner</depend>
 
   <export>
   </export>
