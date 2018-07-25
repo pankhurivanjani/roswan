@@ -8,13 +8,17 @@
   <author email="brian97cbn@gmail.com">Chen Bainian</author>
 
 
-  <license>BSD</license>
+  <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>move_base</depend>
+  <depend>move_base_msgs</depend>
+  <depend>nav_core</depend>
   <depend>map_server</depend>
-  <depend>fake_localization</depend>
   <depend>global_planner</depend>
+  <depend>base_local_planner</depend>
+  <depend>costmap_2d</depend>
+  <depend>dwa_local_planner</depend>
 
   <export>
   </export>
