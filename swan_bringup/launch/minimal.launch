@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
 <launch>
+	<!-- Minimal required launch for swan navigation. -->
 
+	<!-- Launch the drivers: gps, imu and thruster. -->
 	<include file="$(find swan_bringup)/launch/include/drivers.launch.xml">
 		<arg name="thruster_type" value="$(env THRUSTER)" />
 		<arg name="imu_type" value="$(env IMU)"  />
 		<arg name="gps_type" value="$(env GPS)" />
 	</include>
 	
+	<!-- launch the controller -->
 	<include file="$(find swan_bringup)/launch/include/controller.launch.xml">
 		<arg name="controller_type" value="$(env CONTROLLER)" />
 		<arg name="controller_config" value="standard_auto"  />
 	</include>
 	
+	<!-- launch the localization node along with the map server -->
 	<include file="$(find swan_bringup)/launch/include/localization.launch.xml">
 		<arg name="map" value="$(env MAP)" />
 	</include>
 
+	<!-- launch the tf tree -->
 	<include file="$(find swan_bringup)/launch/include/tf.launch.xml"/>
 	
+	<!-- launch the move base navigation -->
     <include file="$(find swan_navigation)/launch/navigate.launch" />
 
 

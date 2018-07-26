@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
+	<!-- Differential drive controller -->
 	<arg name="controller_config" default="standard_auto" />
 	
 	<node pkg="swan_controller" type="swan_controller_node" name="diff_controller" output="screen" >
