@@ -1,10 +1,13 @@
+/*
+ * Author: Chen Bainian
+ */
 #include <swan_localization/utm_tf_node.h>
 class static_UTM_publisher : public UTM_tf_node
 {
 public:
-    static_UTM_publisher(int a){
-        init();
+    static_UTM_publisher(){
     }
+
     void init(){
         int frequency;
         double latitude, longitude;
@@ -30,5 +33,6 @@ public:
 
 int main(int argc, char** argv){
     ros::init(argc, argv, "static_utm_publisher");
-    static_UTM_publisher static_utm_publisher(1);
+    static_UTM_publisher static_utm_publisher;
+    static_utm_publisher.init();
 }

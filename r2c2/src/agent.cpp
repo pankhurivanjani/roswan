@@ -17,6 +17,7 @@ void Agent::spinThread(){
 
 bool Agent::serviceCallback(r2c2::agent_request::Request &req, r2c2::agent_request::Response &res){
     res.capability = capabilities[req.mission];
+    return true;
 }
 
 const void Agent::init(const std::string& _id)

@@ -1,3 +1,7 @@
+/*
+ * Author: Chen Bainian
+ */
+
 #include <swan_controller/pid_controller.h>
 
 PID_Controller::PID_Controller()            
@@ -12,6 +16,7 @@ PID_Controller::~PID_Controller()
 
 const void PID_Controller::pid_setup(){
     input = feedback = 0;
+    // Debug mode enables dynamic reconfigure. Dynamic reconfigure override rosparams.
     if(mode == "DEBUG"){
         if(enable_pid){
             ros::param::param<double>("~kp", kp, 1);
@@ -22,6 +27,7 @@ const void PID_Controller::pid_setup(){
             diag_pub = n.advertise<swan_msgs::PID_diagnostic>("pid_diagnostic", 10); 
         }
     }
+    // Standard mode disable dynamic reconfigure. Rosparams sets the PID constants.
     else if(mode == "STANDARD"){
         ros::param::param<double>("~kp", kp, 1);
         ros::param::param<double>("~ki", ki, 0);
@@ -31,6 +37,9 @@ const void PID_Controller::pid_setup(){
     err = input = feedback = p_gain = i_gain = d_gain = 0;
 }
 
+
+
+// Dynamic reconfigure callback.
 void PID_Controller::pid_reconfigure_callback(swan_controller::swanPIDConfig &config, uint32_t level){
     mtx.lock();
     kp = config.p * pow(10, config.p_scale - 2);
@@ -40,6 +49,7 @@ void PID_Controller::pid_reconfigure_callback(swan_controller::swanPIDConfig &co
     ROS_INFO("Reconfigure PID Constant:\t kp=%.2f,\tki=%.2f,\tkd=%.2f.", kp, ki, kd);
 }
 
+// Display custom defined pid diagnostic msg
 const void PID_Controller::diagnostic_pub(){
     swan_msgs::PID_diagnostic diagnostic_msg;
     diagnostic_msg.header.stamp = ros::Time::now();

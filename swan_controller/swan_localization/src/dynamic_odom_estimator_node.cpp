@@ -1,3 +1,7 @@
+/*
+ * Author: Chen Bainian
+ */
+
 #include <swan_localization/dynamic_odom_estimator.h>
 using namespace swan_localization;
 

@@ -12,6 +12,7 @@ Controller::~Controller(){
 
 
 const void Controller::run(){
+	// Setup
     basic_setup();
     current_time = last_time = last_cmd_time = ros::Time::now().toSec();
     spin_thread = new boost::thread(boost::bind(&Controller::spinThread, this));
@@ -30,11 +31,13 @@ const void Controller::run(){
             failsafe();
             r->sleep();
         }
+        // Send stop command when ros is shutdown
         stop();
         std::cout << "\033[0;33mController Stopped!\033[0m" << std::endl;
         spin_thread->join();
     }
     catch(std::exception& e){
+    	// Send stop command if the controller is ended unexpectedly
         stop();
         std::cout << "\033[0;31m" << e.what() <<"\033[0m" << std::endl;
         std::cout << "\033[0;31mController Stopped!\033[0m" << std::endl;
@@ -57,6 +60,7 @@ const void Controller::basic_setup(){
         mode = "STANDARD";
     }
 
+    // Permission to enable or diable joy, key cmd or pid control in debug mode.
     if(mode == "DEBUG"){
         ros::param::param<bool>("~enable_joy", enable_joy, false);
         if(enable_joy){
@@ -68,17 +72,21 @@ const void Controller::basic_setup(){
         }
         ros::param::param<bool>("~enable_pid", enable_pid, true);
     }
+    // Joy is set to false in standard mode, key cmd and pid is set to enable.
     else if(mode == "STANDARD"){
         enable_joy = false;
         enable_pid = enable_key = true;
         key_sub = n.subscribe("cmd_vel", 1, &Controller::key_callback, this);
     }
+
+    // Params for failsafe
     ros::param::param<double>("~max_no_cmd_time", MAX_NO_CMD_TIME, 0.2);
     ros::param::param<double>("~stop_cmd_duration", STOP_CMD_DURATION, 0.2);
 }
 
 
 
+// Joy cmd callback, not set yet
 void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
     mtx.lock();
     _last_cmd_time = ros::Time::now().toSec();
@@ -86,17 +94,17 @@ void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
 }
 
 
-
+// Key cmd callback
 void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
     mtx.lock();
     _key_speed = msg->linear.x;
     _key_turn = msg->angular.z;
-    _last_cmd_time = ros::Time::now().toSec();
+    _last_cmd_time = ros::Time::now().toSec(); // record the last time there is a command
     mtx.unlock();
 }
 
 
-
+// Update imu
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
     mtx.lock();
     _heading = tf2::getYaw(imu->orientation);
@@ -146,6 +154,8 @@ void Controller::stop(){
 void Controller::spinThread(){
     ros::spin();
 }
+
+// Copy params between thread
 void Controller::update_spinparams(){
     mtx.lock();
     last_cmd_time = _last_cmd_time;

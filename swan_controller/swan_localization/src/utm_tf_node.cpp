@@ -1,15 +1,18 @@
+/*
+ * Author: Chen Bainian
+ */
 #include <swan_localization/utm_tf_node.h>
 using namespace gps_common;
 
 
-UTM_tf_node::UTM_tf_node(){
+UTM_tf_node::UTM_tf_node():
+		n(), acquired_fix(false)
+{
     ;
 }
 
-UTM_tf_node::UTM_tf_node(int a)
-:n(), acquired_fix(false)
-{
-    init();
+UTM_tf_node::~UTM_tf_node(){
+    ;
 }
 
 void UTM_tf_node::init(){

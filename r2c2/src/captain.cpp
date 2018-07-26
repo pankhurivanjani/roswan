@@ -27,6 +27,8 @@ const void Captain::run(){
 const void Captain::simple_point_mission(const std::vector<std::vector<double> >& mission_points){
     move_base_msgs::MoveBaseGoal goal;
     for(int i = 0; i < mission_points.size(); ++i){
+
+    	// Pass the mission point coordinates to goal msg
         goal.target_pose.header.stamp = ros::Time::now();
         goal.target_pose.header.frame_id = "map";
         goal.target_pose.pose.position.x = mission_points[i][0];
@@ -43,6 +45,8 @@ const void Captain::simple_point_mission(const std::vector<std::vector<double> >
         ac.sendGoal(goal);
 
         ROS_INFO("Goal: (%.2f, %.2f) sent", mission_points[i][0], mission_points[i][1]);
+
+        //Wait for the result
         if(ac.waitForResult())
             ROS_INFO("Action finished: %s", ac.getState().toString().c_str());
         else{
@@ -54,6 +58,8 @@ const void Captain::simple_point_mission(const std::vector<std::vector<double> >
 
 
 const void Captain::loiter(){
+
+	// Capture the loitering point
     ROS_INFO("Waiting for valid odom.");
     while(odom.pose.pose.orientation.w == 0){
         ros::spinOnce();
@@ -65,12 +71,14 @@ const void Captain::loiter(){
     tf2::Transform loiter_pose;
     tf2::convert(goal.target_pose.pose, loiter_pose);
     ROS_INFO("Start loitering...");
+
     while(n.ok()){
         ros::spinOnce();
         tf2::Transform current_pose;
         tf2::convert(odom.pose.pose, current_pose);
         double distance_from_goal = tf2::tf2Distance(loiter_pose.getOrigin(), current_pose.getOrigin());
         ROS_DEBUG("Distance from goal: %.2f", distance_from_goal);
+        // Keep sending the loitering point when robot is out of the loiter range
         if(distance_from_goal >= 5){
             ROS_INFO("Out of loiter range by %.2f, traveling back...", distance_from_goal);
             ac.sendGoal(goal);
@@ -84,6 +92,7 @@ const void Captain::loiter(){
 
 }
 
+// Update the robot location
 void Captain::odom_callback(const nav_msgs::OdometryConstPtr& msg){
     odom.pose.pose.position.x = msg->pose.pose.position.x;
     odom.pose.pose.position.y = msg->pose.pose.position.y;

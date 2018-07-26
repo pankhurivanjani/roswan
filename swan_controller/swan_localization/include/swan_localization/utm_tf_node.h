@@ -52,7 +52,7 @@ protected:
 
 public:
     UTM_tf_node();
-    UTM_tf_node(int a);
+    virtual ~UTM_tf_node();
     virtual void init();
     void update_UTM(const sensor_msgs::NavSatFix::ConstPtr& fix);
     void update_orientation(const sensor_msgs::Imu::ConstPtr& imu);

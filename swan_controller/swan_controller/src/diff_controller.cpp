@@ -1,3 +1,7 @@
+/*
+ * Author: Chen Bainian
+ */
+
 #include <swan_controller/diff_controller.h>
 
 Diff_Controller::Diff_Controller(){
@@ -8,16 +12,21 @@ Diff_Controller::~Diff_Controller(){
 }
 
 void Diff_Controller::setup(){
+	// PID setup
     if(enable_pid)
         pid_setup();
     last_turn = 0;
     desired_speed = desired_turn = desired_heading = 0;
+
+    // Get ros parameters
     ros::param::param<std::string>("~type", type, "TURN" );
     ros::param::param<double>("~pwr_min", pwr_min, 0.4);
     ros::param::param<double>("~pwr_max", pwr_max, 0.9);
     ros::param::param<double>("~speed_min", speed_min, 0);
     ros::param::param<double>("~speed_max", speed_max, 2);
     ros::param::param<double>("~gain_min", min_gain, 0.05);
+
+    // Wait for the first compass feedback
     ROS_INFO("Waiting for compass value");
     while(n.ok()){
         update_spinparams();
