@@ -14,13 +14,20 @@
 
 class PID_Controller : public Controller{
 protected:
+
+	/* PID parameters */
     double ki, kp, kd;
     double p_gain, i_gain, d_gain;
     double input, feedback, err;
+
+    /* Dynamic reconfigure parameters */
     dynamic_reconfigure::Server<swan_controller::swanPIDConfig> server;
     dynamic_reconfigure::Server<swan_controller::swanPIDConfig>::CallbackType cb;
+
+    /* Publisher */
     ros::Publisher diag_pub;
 
+    /* Calculate gains */
     const double pid(){
         double new_err = input - feedback;
         p_gain = kp * new_err;
@@ -38,7 +45,7 @@ public:
     const void pid_setup();
     void pid_reconfigure_callback(swan_controller::swanPIDConfig &config, uint32_t level);
     const void diagnostic_pub();
-        
+    void debug_display();
 };
 
 #endif

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!--include file="$(swan_bringup)/launch/localization_test.launch"-->
+
+    <include file="$(find swan_navigation)/launch/navigate.launch" />
+</launch>
+

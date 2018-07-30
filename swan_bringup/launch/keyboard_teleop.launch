@@ -6,6 +6,5 @@
             turn: 0.8
         </rosparam>
     </node>
-
 </launch>
 

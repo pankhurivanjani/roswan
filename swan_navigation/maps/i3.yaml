@@ -1,0 +1,9 @@
+free_thresh: 0.196
+image: i3.pgm
+negate: 0
+occupied_thresh: 0.65
+origin:
+- -106.95119918949786
+- -97.59734172333992
+- 0
+resolution: 0.5

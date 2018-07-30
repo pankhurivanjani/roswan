@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="controller_type" />
+	<arg name="controller_config" />
+	
+	<include file="$(find swan_bringup)/launch/include/controller/$(arg controller_type).launch.xml" >
+		<arg name="controller_config" value="$(arg controller_config)"/>
+	</include>
+		
+</launch>

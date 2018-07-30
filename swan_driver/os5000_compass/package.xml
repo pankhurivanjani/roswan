@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>os5000_compass</name>
+  <version>0.0.0</version>
+  <description>The os5000_compass package</description>
+
+  <maintainer email="brian97cbn@gmail.com">Chen Bainian</maintainer>
+  <author email="brian97cbn@gmail.com">Chen Bainian</author>
+
+
+  <license>TODO</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

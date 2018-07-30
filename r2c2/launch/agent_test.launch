@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="r2c2" type="agent_test" name="agent_test" output="screen">
+        <rosparam file="$(find r2c2)/params/capabilities.yaml" command="load" />
+    </node>
+</launch>

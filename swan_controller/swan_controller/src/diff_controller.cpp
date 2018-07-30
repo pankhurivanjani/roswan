@@ -1,3 +1,7 @@
+/*
+ * Author: Chen Bainian
+ */
+
 #include <swan_controller/diff_controller.h>
 
 Diff_Controller::Diff_Controller(){
@@ -8,26 +12,27 @@ Diff_Controller::~Diff_Controller(){
 }
 
 void Diff_Controller::setup(){
+	// PID setup
     if(enable_pid)
         pid_setup();
     last_turn = 0;
     desired_speed = desired_turn = desired_heading = 0;
+
+    // Get ros parameters
     ros::param::param<std::string>("~type", type, "TURN" );
     ros::param::param<double>("~pwr_min", pwr_min, 0.4);
     ros::param::param<double>("~pwr_max", pwr_max, 0.9);
     ros::param::param<double>("~speed_min", speed_min, 0);
     ros::param::param<double>("~speed_max", speed_max, 2);
     ros::param::param<double>("~gain_min", min_gain, 0.05);
+
+    // Wait for the first compass feedback
+    ROS_INFO("Waiting for compass value");
     while(n.ok()){
-        ros::spinOnce();
+        update_spinparams();
         if(heading >= -M_PI && heading <= M_PI){
+            ROS_INFO("Compass value recieved!");
             break;
-        }
-        if(heading == 3 * M_PI){
-            ROS_WARN("Compass values not available");
-        }
-        else{
-            ROS_WARN("Heading out of range, heading: %f", heading);
         }
         ros::Rate(frequency).sleep();
     }
@@ -55,32 +60,29 @@ void Diff_Controller::last_turn_estimator(){
 }
 
 void Diff_Controller::loop(){
-    if(!failsafe()){
-        if(enable_joy){
-            ;
-        }
-        else if(enable_key){
-                desired_speed = key_speed;
-                desired_turn = key_turn;
-        }
-
-        if(type == "TURN"){
-            last_turn_estimator();
-            input = desired_turn;
-            feedback = last_turn;
-        }
-        else if(type == "HEADING"){
-            desired_heading_estimator();
-            input = desired_heading;
-            feedback = heading;
-        }
-        cmd_speed = desired_speed;
-        cmd_turn =  pid();
-        cmd_turn = (cmd_turn > min_gain) ? cmd_turn : 0;
-        //ROS_INFO("desired_heading = %.5f", desired_heading);
-        diff_drive(cmd_speed, cmd_turn);
+    if(enable_joy){
+        ;
     }
-    diagnostic_pub();
+    else if(enable_key){
+            desired_speed = key_speed;
+            desired_turn = key_turn;
+    }
+
+    if(type == "TURN"){
+        last_turn_estimator();
+        input = desired_turn;
+        feedback = last_turn;
+    }
+    else if(type == "HEADING"){
+        desired_heading_estimator();
+        input = desired_heading;
+        feedback = heading;
+    }
+    cmd_speed = desired_speed;
+    cmd_turn =  pid();
+    cmd_turn = (std::abs(cmd_turn) > min_gain) ? cmd_turn : 0;
+    //ROS_INFO("desired_heading = %.5f", desired_heading);
+    diff_drive(cmd_speed, cmd_turn);
 }
 
 void Diff_Controller::diff_drive(const double _speed, const double _turn){

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>swan_navigation</name>
+  <version>1.0.0</version>
+  <description>The swan_navigation package</description>
+
+  <maintainer email="brian97cbn@gmail.com">Chen Bainian</maintainer>
+  <author email="brian97cbn@gmail.com">Chen Bainian</author>
+
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>move_base</depend>
+  <depend>move_base_msgs</depend>
+  <depend>nav_core</depend>
+  <depend>map_server</depend>
+  <depend>global_planner</depend>
+  <depend>base_local_planner</depend>
+  <depend>costmap_2d</depend>
+  <depend>dwa_local_planner</depend>
+
+  <export>
+  </export>
+</package>

@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <!-- test 1 simulator -->
-    <node pkg="swan_sim" type="auto_sim" name="test_1_sim">
-        <param name="rate" value="10" />
-    </node>
-</launch>

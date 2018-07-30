@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="thruster_type" />
+	<arg name="imu_type" />
+	<arg name="gps_type" />
+	
+	<!-- Launch the ros node for the thruster -->
+	<include file="$(find swan_bringup)/launch/include/drivers/$(arg thruster_type).launch.xml" />
+
+	<!-- Launch the ros node for the IMU -->
+	<include file="$(find swan_bringup)/launch/include/drivers/$(arg imu_type).launch.xml" />
+	
+	<!-- Launch the ros node for the GPS -->
+	<include file="$(find swan_bringup)/launch/include/drivers/$(arg gps_type).launch.xml" />
+	
+</launch>

@@ -1,0 +1,4 @@
+capabilities:
+  simple_point_mission_agent:
+    simple_point_mission: false
+    lawnmower_mission: false

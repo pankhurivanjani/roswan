@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>r2c2</name>
+  <version>0.0.0</version>
+  <description>The r2c2 package, agent and new captain are not implemented yet</description>
+
+  <maintainer email="brian97cbn@gmail.com">Chen Bainian</maintainer>
+  <author email="brian97cbn@gmail.com">Chen Bainian</author>
+
+
+  <license>TODO</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>actionlib</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>move_base_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="map" default="pandan" />
+	<arg name="map_file" value="$(find swan_navigation)/maps/$(arg map).yaml" />
+	<arg name="centre_file" value="$(find swan_navigation)/maps/$(arg map)centre.yaml" />
+
+
+    <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
+	
+	<node pkg="swan_localization" type="sensor_odom_estimator" name="sensor_odom_estimator">
+        <remap from="odom" to="odom1" />
+        <rosparam file="$(find swan_bringup)/params/localization/sensor_odom_estimator.yaml" command="load" />
+        <rosparam file="$(arg centre_file)" command="load" />
+    </node>
+	
+    <node pkg="swan_localization" type="dynamic_odom_estimator" name="dynamic_odom_estimator" output="screen">
+        <remap from="odom" to="odom2" />
+        <remap from="initialodom" to="odom1" />
+        <rosparam file="$(find swan_bringup)/params/localization/dynamic_odom_estimator.yaml" command="load" />
+    </node>
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="robot_pose_ekf" output="screen">
+        <rosparam file="$(find swan_bringup)/params/localization/ekf_localization_node.yaml" command="load" />
+        <remap from="odometry/filtered" to="odom" />
+    </node>
+    
+    
+	
+	
+</launch>

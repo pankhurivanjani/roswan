@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- Differential drive controller -->
+	<arg name="controller_config" default="standard_auto" />
+	
+	<node pkg="swan_controller" type="swan_controller_node" name="diff_controller" output="screen" >
+		<remap from="diff_controller/cmd_vel" to="cmd_vel" />
+		<remap from="diff_controller/imu" to="imu" />
+		<rosparam command="load" file="$(find swan_bringup)/params/controller/diff_controller/$(arg controller_config).yaml" />
+	</node>>
+	
+</launch>

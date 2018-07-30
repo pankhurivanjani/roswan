@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="os5000_compass" type="os5000_compass" name="os5000">
+        <remap from="/os5000" to="imu"/>
+		<rosparam command="load" file="$(find swan_bringup)/params/drivers/os5000_compass.yaml" ns="os5000_compass"/>
+	</node>
+</launch>

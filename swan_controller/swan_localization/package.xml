@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>swan_localization</name>
+  <version>0.0.0</version>
+  <description>The swan_localization package</description>
+
+  <maintainer email="brian97cbn@gmail.com">Chen Bainian</maintainer>
+
+
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+
+
+  <author email="brian97cbn@gmail.com">Chen Bainian</author>
+
+
+  <!-- The *depend tags are used to specify dependencies -->
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>nav_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>gps_common</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>robot_localization</depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+  </export>
+</package>

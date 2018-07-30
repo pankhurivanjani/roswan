@@ -4,36 +4,44 @@
 Controller::Controller()
     :heading(3 * M_PI), turn(0)
 {
-    ;
+    _heading = heading;
 }
 Controller::~Controller(){
-    ;
+    delete r, spin_thread;
 }
 
 
 const void Controller::run(){
+	// Setup
     basic_setup();
+    current_time = last_time = last_cmd_time = ros::Time::now().toSec();
+    spin_thread = new boost::thread(boost::bind(&Controller::spinThread, this));
+
     setup();
     if(n.ok())
         stop();
-    ros::Rate r(frequency);
+    r = new ros::Rate(frequency);
     ros::Duration(0.5).sleep();
-    current_time = last_time = last_cmd_time = ros::Time::now().toSec();
     try{
         while(n.ok()){
-            ros::spinOnce();
             current_time = ros::Time::now().toSec();
+            update_spinparams();
             loop();
             last_time = current_time;
-            r.sleep();
+            failsafe();
+            r->sleep();
         }
+        // Send stop command when ros is shutdown
         stop();
         std::cout << "\033[0;33mController Stopped!\033[0m" << std::endl;
+        spin_thread->join();
     }
     catch(std::exception& e){
+    	// Send stop command if the controller is ended unexpectedly
         stop();
         std::cout << "\033[0;31m" << e.what() <<"\033[0m" << std::endl;
         std::cout << "\033[0;31mController Stopped!\033[0m" << std::endl;
+        spin_thread->join();
     }
 }
 
@@ -46,6 +54,13 @@ const void Controller::basic_setup(){
     ros::param::param<std::string>("~mode", mode, "STANDARD");
     imu_sub = n.subscribe("imu", 1, &Controller::imu_callback, this);
 
+
+    if(mode != "DEBUG" && mode != "STANDARD"){
+        ROS_WARN("Wrong mode type. using STANDARD as default");
+        mode = "STANDARD";
+    }
+
+    // Permission to enable or diable joy, key cmd or pid control in debug mode.
     if(mode == "DEBUG"){
         ros::param::param<bool>("~enable_joy", enable_joy, false);
         if(enable_joy){
@@ -57,51 +72,63 @@ const void Controller::basic_setup(){
         }
         ros::param::param<bool>("~enable_pid", enable_pid, true);
     }
+    // Joy is set to false in standard mode, key cmd and pid is set to enable.
     else if(mode == "STANDARD"){
-        ;
+        enable_joy = false;
+        enable_pid = enable_key = true;
+        key_sub = n.subscribe("cmd_vel", 1, &Controller::key_callback, this);
     }
-    else{
-        ROS_WARN("Wrong mode type. using STANDARD as default");
-        mode = "STANDARD";
-    }
+
+    // Params for failsafe
     ros::param::param<double>("~max_no_cmd_time", MAX_NO_CMD_TIME, 0.2);
     ros::param::param<double>("~stop_cmd_duration", STOP_CMD_DURATION, 0.2);
 }
 
 
 
+// Joy cmd callback, not set yet
 void Controller::joy_callback(const sensor_msgs::Joy::ConstPtr& joy){
-    ;
-    last_cmd_time = ros::Time::now().toSec();
+    mtx.lock();
+    _last_cmd_time = ros::Time::now().toSec();
+    mtx.unlock();
 }
 
 
-
+// Key cmd callback
 void Controller::key_callback(const geometry_msgs::Twist::ConstPtr& msg){
-    key_speed = msg->linear.x;
-    key_turn = msg->angular.z;
-    last_cmd_time = ros::Time::now().toSec();
+    mtx.lock();
+    _key_speed = msg->linear.x;
+    _key_turn = msg->angular.z;
+    _last_cmd_time = ros::Time::now().toSec(); // record the last time there is a command
+    mtx.unlock();
 }
 
 
-
+// Update imu
 void Controller::imu_callback(const sensor_msgs::Imu::ConstPtr& imu){
-    last_heading = heading;
-    heading = tf::getYaw(imu->orientation);
-    double dt = ros::Time::now().toSec() - last_time;
-    turn = (heading - last_heading) / dt;
+    mtx.lock();
+    _heading = tf2::getYaw(imu->orientation);
+    mtx.unlock();
 }
 
 
 
 const bool Controller::failsafe(){
     double no_cmd_time = current_time - last_cmd_time;
-    if(no_cmd_time > MAX_NO_CMD_TIME && no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION)){
-        stop();
+    if(no_cmd_time > MAX_NO_CMD_TIME){
+        ROS_WARN("Failsafe activates");
+        while(n.ok() && no_cmd_time > MAX_NO_CMD_TIME){
+            current_time = ros::Time::now().toSec();
+            update_spinparams();
+            no_cmd_time = current_time - last_cmd_time;
+            if(no_cmd_time < (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
+                stop();
+            r->sleep();
+            last_time = current_time;
+        }
+        ROS_INFO("Recieve command! Failsafe disabled.");
         return true;
     }
-    else if(no_cmd_time >= (MAX_NO_CMD_TIME + STOP_CMD_DURATION))
-        return true;
     else
         return false;
 }
@@ -123,4 +150,27 @@ void Controller::setup(){
 void Controller::stop(){
     ;
 }
+
+void Controller::spinThread(){
+    ros::spin();
+}
+
+// Copy params between thread
+void Controller::update_spinparams(){
+    mtx.lock();
+    last_cmd_time = _last_cmd_time;
+    key_speed = _key_speed;
+    key_turn = _key_turn;
+    heading = _heading;
+    mtx.unlock();
+    turn = (heading - last_heading) / (current_time - last_time);
+    last_heading = heading;
+    if(mode == "DEBUG")
+        debug_display();
+}
+
+void Controller::debug_display(){
+    ;
+}
+
 

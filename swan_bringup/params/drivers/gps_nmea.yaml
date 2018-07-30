@@ -1,0 +1,3 @@
+port: /dev/gps
+baud: 4800
+frame_id: base_link
